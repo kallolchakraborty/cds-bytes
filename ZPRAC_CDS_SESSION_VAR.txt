@@ -1,0 +1,68 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_SESSION_VAR
+ * SQL VIEW: ZPRAC_SQL_SESS_V
+ * PURPOSE : Using session variables for context-aware filtering
+ * TOPIC   : Session variables ($session.system_date, $session.user, etc.)
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. Session variables provide runtime context without ABAP parameters
+ *   2. Evaluated at query execution time based on the ABAP session
+ *   3. Use $session. prefix — distinct from :parameter notation
+ *   4. @Semantics annotations are required on all fields to enable
+ *      downstream consumption (OData, Analytics, Fiori)
+ *
+ * AVAILABLE SESSION VARIABLES (6 total):
+ *   $session.system_date      →  Current application server date (DATS)
+ *   $session.user             →  Current ABAP user (SY-UNAME)
+ *   $session.client           →  Current client (SY-MANDT)
+ *   $session.system_language  →  Logon language (SY-LANGU)
+ *   $session.user_date        →  User's date according to user profile
+ *   $session.user_timezone    →  User's time zone from user profile
+ *
+ * USE CASES:
+ *   $session.system_date  → Show only past/current records based on today
+ *   $session.user         → Restrict data to user's own created records
+ *   $session.client       → Multi-client filtering (rarely needed — implicit)
+ *   $session.system_language → Language-dependent text retrieval
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_SESS_V'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Session variables ($session.system_date, $session.user)'
+define view ZPRAC_CDS_SESSION_VAR
+  as select from /dmo/travel
+{
+  @Environment.systemField: #CLIENT
+  key client            as Client,
+  key travel_id         as TravelId,
+      agency_id         as AgencyId,
+      customer_id       as CustomerId,
+      @Semantics.date: true
+      begin_date        as BeginDate,
+      @Semantics.date: true
+      end_date          as EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      booking_fee       as BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      total_price       as TotalPrice,
+      currency_code     as CurrencyCode,
+      description       as Description,
+      status            as Status,
+      @Semantics.user.createdBy: true
+      createdby         as Createdby,
+      @Semantics.date: true
+      createdat         as Createdat,
+      @Semantics.user.lastChangedBy: true
+      lastchangedby     as Lastchangedby,
+      @Semantics.date: true
+      lastchangedat     as Lastchangedat
+}
+where
+      /* Only show trips where end date is in the past (already completed) */
+      end_date < $session.system_date
+  /* AND only records created by the currently logged-in user */
+  and createdby = $session.user

@@ -1,0 +1,88 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_VALUE_HELP
+ * SQL VIEW: ZPRAC_SQL_VLHlp
+ * PURPOSE : Value help definition for Fiori fields
+ * TOPIC   : @Consumption.valueHelpDefinition — search help pattern
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. Value help provides F4 / dropdown suggestions for fields
+ *   2. Defined using @Consumption.valueHelpDefinition annotation
+ *   3. Can point to another CDS view, table, or element list
+ *   4. Key parameters:
+ *      ┌────────────────────┬──────────────────────────────────────┐
+ *      │ Parameter          │ Description                          │
+ *      ├────────────────────┼──────────────────────────────────────┤
+ *      │ entity             │ CDS view providing the value list    │
+ *      │ element            │ Field in the value help view         │
+ *      │ label              │ Display text for the help            │
+ *      │ additionalBinding  │ Additional return parameters         │
+ *      │ useForValidation   │ Validate input against values        │
+ *      └────────────────────┴──────────────────────────────────────┘
+ *   5. Additional annotations:
+ *      @Consumption.filter → Defines filter fields for the value help
+ *      @Consumption.valueHelp → Reference to a specific VH definition
+ *   6. The VALUE HELP VIEW (ZPRAC_CDS_AGENCY_VH below) is a lightweight
+ *      view returning only the key + description for the dropdown.
+ *      It is NOT a separate file — included here for context.
+ *
+ * VALUE HELP VIEW (for AgencyID):
+ *   define view ZPRAC_CDS_AGENCY_VH
+ *     as select from /dmo/agency
+ *   {
+ *     key agency_id as AgencyID,
+ *         name      as AgencyName,
+ *         street    as Street,
+ *         city      as City
+ *   }
+ *
+ * In production, value help views are often created as separate
+ * CDS artifacts following the _VH naming convention.
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_VLHLP'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Value help definition (@Consumption.valueHelpDefinition)'
+define view ZPRAC_CDS_VALUE_HELP
+  as select from /dmo/travel
+{
+  @Environment.systemField: #CLIENT
+  key client            as Client,
+  key travel_id         as TravelId,
+      /*
+       * Value help for AgencyID:
+       *   entity → ZPRAC_CDS_AGENCY_VH provides the list
+       *   element → AgencyID_FIELD is the key in VH view
+       *   additionalBinding → Returns AgencyName from VH
+       */
+      @Consumption.valueHelpDefinition: [{
+        entity: { name: 'ZPRAC_CDS_AGENCY_VH', element: 'AgencyID' },
+        additionalBinding: [
+          { localElement: 'AgencyName', bindingElement: 'AgencyName' }
+        ],
+        useForValidation: true,
+        label: 'Agency'
+      }]
+      agency_id         as AgencyId,
+      @Consumption.filter: { selectionType: #SINGLE, multipleSelections: false }
+      @Consumption.valueHelpDefinition: [{
+        entity: { name: 'ZPRAC_CDS_SIMPLE', element: 'CustomerId' },
+        label: 'Customer'
+      }]
+      customer_id       as CustomerId,
+      @Semantics.date: true
+      begin_date        as BeginDate,
+      @Semantics.date: true
+      end_date          as EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      booking_fee       as BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      total_price       as TotalPrice,
+      currency_code     as CurrencyCode,
+      description       as Description,
+      status            as Status,
+      ''                as AgencyName    -- Placeholder for value help binding
+}

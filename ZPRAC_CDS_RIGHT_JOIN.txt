@@ -1,0 +1,70 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_RIGHT_JOIN
+ * SQL VIEW: ZPRAC_SQL_RIGHT_J
+ * PURPOSE : RIGHT OUTER JOIN — all rows from right side preserved
+ * TOPIC   : RIGHT OUTER JOIN — mirror of LEFT JOIN (less common)
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. RIGHT OUTER JOIN returns ALL rows from the RIGHT table, with
+ *      matching data from the LEFT when available (otherwise NULLs)
+ *   2. RIGHT JOIN is the mirror of LEFT JOIN — they produce the same
+ *      result if you swap the table order
+ *   3. RIGHT JOIN is RARELY used in practice because LEFT JOIN reads
+ *      more naturally: "From this main table, join that related table"
+ *   4. Use RIGHT JOIN when: "Give me all bookings AND their travel
+ *      info if the travel exists" (Bookings as the primary entity)
+ *   5. SAP CDS supports: LEFT OUTER JOIN, RIGHT OUTER JOIN, INNER JOIN
+ *
+ * LEFT vs RIGHT vs INNER:
+ *   INNER JOIN     → Only matching:     Travel A + Booking A
+ *   LEFT JOIN      → ALL Travel:        Travel A + Booking A, Travel B + NULL
+ *   RIGHT JOIN     → ALL Booking:       Travel A + Booking A, NULL + Booking C
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_RIGHT_J'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - RIGHT OUTER JOIN (Booking preserved)'
+define view ZPRAC_CDS_RIGHT_JOIN
+  as select from /DMO/I_Travel_D as _Travel
+
+    /*
+     * RIGHT OUTER JOIN:
+     *   All BOOKINGS are returned even if no matching Travel exists.
+     *   This is the mirror of LEFT OUTER JOIN — same result as:
+     *     LEFT JOIN on _Booking → _Travel with tables swapped.
+     */
+    right outer join /DMO/I_Booking_D as _Booking
+      on _Travel.TravelUUID = _Booking.TravelUUID
+
+{
+  /* Keys */
+  key _Booking.BookingUUID,
+
+  /* Booking fields (always present — right side is preserved) */
+      _Booking.BookingID,
+      @Semantics.date: true
+      _Booking.BookingDate,
+      _Booking.BookingStatus,
+      _Booking.AirlineID,
+      @Semantics.date: true
+      _Booking.FlightDate,
+      @Semantics.amount.currencyCode: 'BookingCurrency'
+      _Booking.FlightPrice,
+      _Booking.CurrencyCode               as BookingCurrency,
+
+  /* Travel fields (may be NULL if no matching travel exists) */
+      coalesce(_Travel.TravelID, '')      as TravelID,
+      coalesce(_Travel.AgencyID, '')      as AgencyID,
+      coalesce(_Travel.CustomerID, '')    as CustomerID,
+      @Semantics.date: true
+      _Travel.BeginDate,
+      @Semantics.date: true
+      _Travel.EndDate,
+      _Travel.Description,
+      _Travel.TotalPrice,
+      _Travel.BookingFee
+}

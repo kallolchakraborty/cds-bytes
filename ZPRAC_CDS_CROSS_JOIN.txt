@@ -1,0 +1,67 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_CROSS_JOIN
+ * SQL VIEW: ZPRAC_SQL_CROSS_J
+ * PURPOSE : CROSS JOIN — Cartesian product between two tables
+ * TOPIC   : Cross Joins — every row from A paired with every row from B
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. CROSS JOIN creates a Cartesian product: |A| × |B| rows
+ *   2. No join condition — every row from A matches every row from B
+ *   3. Can be INNER CROSS JOIN, LEFT CROSS JOIN, or just CROSS JOIN
+ *   4. Use with CAUTION: can generate huge result sets
+ *   5. Common use cases:
+ *      - Combining master data with a date dimension
+ *      - Generating all possible combinations for matrix reports
+ *      - Analytical scenarios where every N:M combination is needed
+ *      - Value help combinations (e.g., all products × all plants)
+ *   6. HANA optimizes CROSS JOINs but large tables will be slow
+ *
+ * THIS EXAMPLE:
+ *   Cross-joining Travel with Agency to show how many combinations
+ *   exist. In practice, you would filter or aggregate the result.
+ *   Here we show a simple case with small datasets.
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_CROSS_J'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - CROSS JOIN (Cartesian product)'
+define view ZPRAC_CDS_CROSS_JOIN
+  as select from /DMO/I_Travel_D as _Travel
+    /*
+     * CROSS JOIN (also called comma-separated join in SQL):
+     *   Every Travel row × Every Agency row
+     *   No ON condition — that's the defining characteristic
+     *
+     * INNER CROSS JOIN: Like CROSS JOIN but with additional conditions
+     *   cross join /DMO/I_Agency as _Agency
+     *     on _Travel.CountryCode = _Agency.CountryCode (optional filter)
+     *
+     * LEFT CROSS JOIN: Preserves all left rows even if right is empty
+     */
+    cross join /DMO/I_Agency as _Agency
+{
+  key _Travel.TravelUUID,
+      _Travel.TravelID,
+
+  /* Travel Fields */
+      _Travel.AgencyID              as TravelAgencyID,
+      _Travel.CustomerID,
+      @Semantics.date: true
+      _Travel.BeginDate,
+      @Semantics.date: true
+      _Travel.EndDate,
+      @Semantics.amount.currencyCode: 'TravelCurrency'
+      _Travel.TotalPrice,
+      _Travel.CurrencyCode          as TravelCurrency,
+
+  /* Agency Fields (from cross join) */
+      _Agency.AgencyID              as AllAgencyID,
+      _Agency.Name                  as AgencyName,
+      _Agency.Street                as AgencyStreet,
+      _Agency.City                  as AgencyCity,
+      _Agency.CountryCode           as AgencyCountry
+}

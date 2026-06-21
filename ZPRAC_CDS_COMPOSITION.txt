@@ -1,0 +1,80 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_COMPOSITION
+ * SQL VIEW: ZPRAC_SQL_COMP
+ * PURPOSE : CDS Composition — parent-child with dependent lifecycle
+ * TOPIC   : Composition vs Association — the key difference for RAP
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. Composition defines a WHOLE-PART relationship where the child
+ *      cannot exist independently from the parent (e.g., Order → Item)
+ *   2. If the parent is deleted, ALL children are deleted (cascade)
+ *   3. Composition is the foundation of RAP BO (Business Object) modeling
+ *   4. Syntax: composition [0..n] of TargetView as _alias on condition
+ *   5. @ObjectModel.association.type: #TO_COMPOSITION defines in RAP
+ *   6. Cardinality: [0..1] = optional single, [1] = required single,
+ *      [0..n] = optional multi, [1..n] = required multi
+ *
+ * COMPOSITION vs ASSOCIATION:
+ *   ┌─────────────┬──────────────────────┬────────────────────┐
+ *   │ Aspect      │ Composition          │ Association        │
+ *   ├─────────────┼──────────────────────┼────────────────────┤
+ *   │ Lifecycle   │ Dependent (cascade)  │ Independent        │
+ *   │ Ownership   │ Parent owns child    │ No ownership       │
+ *   │ Delete      │ Deletes children     │ Does not affect    │
+ *   │ RAP Role    │ BO node relationship │ Query relationship │
+ *   │ Example     │ Travel → Booking     │ Booking → Customer │
+ *   └─────────────┴──────────────────────┴────────────────────┘
+ *
+ * THIS EXAMPLE:
+ *   Travel is the root entity with Composition to Booking as child.
+ *   A Booking cannot exist without a Travel.
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_COMP'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Composition (Travel → Booking)'
+@VDM.viewType: #BASIC
+@ObjectModel.compositionRoot: true
+define view ZPRAC_CDS_COMPOSITION
+  as select from /dmo/travel as _Travel
+
+  /*
+   * Composition to Booking:
+   *   [0..*] = A Travel has 0 to many Bookings
+   *   Bookings are part of the Travel business object
+   *   Deleting Travel cascades to delete all Bookings
+   *
+   *   The source table /dmo/travel does not have a direct Booking FK,
+   *   so this uses TravelID as a conceptual link. In real CDS, the
+   *   Booking table would have a foreign key to Travel.
+   *
+   *   For real RAP, Booking references Travel via TravelUUID.
+   */
+  composition [0..*] of /DMO/I_Booking_D as _Booking
+    on _Booking.TravelUUID = _Travel.TravelUUID
+
+{
+  @Environment.systemField: #CLIENT
+  key client            as Client,
+  key travel_id         as TravelId,
+      agency_id         as AgencyId,
+      customer_id       as CustomerId,
+      @Semantics.date: true
+      begin_date        as BeginDate,
+      @Semantics.date: true
+      end_date          as EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      booking_fee       as BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      total_price       as TotalPrice,
+      currency_code     as CurrencyCode,
+      description       as Description,
+      status            as Status,
+
+  /* Expose composition to enable child node access */
+      _Booking
+}

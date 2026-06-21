@@ -1,0 +1,74 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_UI_ANNOT
+ * SQL VIEW: ZPRAC_SQL_UI_ANN
+ * PURPOSE : UI annotations for Fiori — @UI.lineItem, @UI.identification, etc.
+ * TOPIC   : @UI annotations — driving Fiori Elements behavior
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. @UI annotations are consumed by Fiori Elements to generate the UI
+ *   2. Common @UI annotation categories:
+ *      ┌──────────────────────┬─────────────────────────────────────┐
+ *      │ Annotation           │ Purpose                             │
+ *      ├──────────────────────┼─────────────────────────────────────┤
+ *      │ @UI.lineItem         │ Column in list/table view           │
+ *      │ @UI.identification   │ Field in object page header          │
+ *      │ @UI.selectionField   │ Filter in selection screen           │
+ *      │ @UI.hidden           │ Hide field from UI                   │
+ *      │ @UI.headerInfo       │ Title/description for object page    │
+ *      │ @UI.facet            │ Sections/tabs on object page         │
+ *      │ @UI.badge            │ Show as badge/indicator              │
+ *      │ @UI.consolidation    │ Consolidation behavior               │
+ *      │ @UI.creationRow      │ Create mode visibility               │
+ *      └──────────────────────┴─────────────────────────────────────┘
+ *   3. @UI annotations are declared in METADATA EXTENSIONS (.asr)
+ *      in production, but shown here inline for learning purposes
+ *   4. @UI annotations do NOT affect the data result — only the UI
+ *   5. Position numbers determine field order in the UI
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_UI_ANN'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - UI annotations for Fiori Elements'
+@UI.headerInfo: {
+  title: { value: 'TravelId' },
+  description: { value: 'Description' },
+  typeName: 'Travel',
+  typeNamePlural: 'Travels'
+}
+define view ZPRAC_CDS_UI_ANNOT
+  as select from /dmo/travel
+{
+  @Environment.systemField: #CLIENT
+  key client            as Client,
+  key travel_id         as TravelId,
+      @UI.selectionField: [ { position: 10 } ]
+      @UI.lineItem: [ { position: 10, label: 'Agency' } ]
+      @UI.identification: [ { position: 10 } ]
+      agency_id         as AgencyId,
+      @UI.selectionField: [ { position: 20 } ]
+      @UI.lineItem: [ { position: 20, label: 'Customer' } ]
+      @UI.identification: [ { position: 20 } ]
+      customer_id       as CustomerId,
+      @UI.lineItem: [ { position: 30, label: 'Start Date' } ]
+      @Semantics.date: true
+      begin_date        as BeginDate,
+      @UI.lineItem: [ { position: 40, label: 'End Date' } ]
+      @Semantics.date: true
+      end_date          as EndDate,
+      @UI.lineItem: [ { position: 50, label: 'Price' } ]
+      @UI.identification: [ { position: 30 } ]
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      total_price       as TotalPrice,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      booking_fee       as BookingFee,
+      currency_code     as CurrencyCode,
+      @UI.lineItem: [ { position: 60, label: 'Description' } ]
+      description       as Description,
+      @UI.selectionField: [ { position: 30 } ]
+      @UI.lineItem: [ { position: 70, label: 'Status' } ]
+      status            as Status
+}

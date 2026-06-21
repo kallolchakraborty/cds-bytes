@@ -1,0 +1,81 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_INNER_JOIN
+ * SQL VIEW: ZPRAC_SQL_INN_JN
+ * PURPOSE : INNER JOIN between Booking, Customer, and Travel views
+ * TOPIC   : Joins in CDS — INNER JOIN with multiple conditions
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. INNER JOIN returns only rows where match exists in both tables
+ *   2. Multiple JOIN conditions are supported with AND/OR parentheses
+ *   3. Table aliases (e.g. _Booking, _Customer) are mandatory with JOINs
+ *   4. All key fields from each source should be included
+ *   5. Use fully qualified field names: alias.field_name
+ *
+ * JOIN TYPES IN CDS:
+ *   INNER JOIN       → Only matching rows (default)
+ *   LEFT OUTER JOIN  → All rows from left, NULLs from right
+ *   RIGHT OUTER JOIN → All rows from right, NULLs from left (rarely used)
+ *
+ * PERFORMANCE NOTE:
+ *   The HANA compiler optimizes JOIN order. CDS JOINs are NOT necessarily
+ *   executed in the order they are written. Use compareFilter for optimization.
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_INN_JN'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - INNER JOIN between Booking, Customer, Travel'
+define view ZPRAC_CDS_INNER_JOIN
+  as select from /DMO/I_Booking_D as _Booking
+    inner join /DMO/I_Customer  as _Customer
+      on _Booking.CustomerID = _Customer.CustomerID
+     and (  _Booking.BookingStatus = 'N'
+         or _Booking.BookingStatus = 'B' )
+    inner join /DMO/I_Travel_D  as _Travel
+      on _Booking.CustomerID = _Travel.CustomerID
+{
+  /* Keys */
+  key _Booking.BookingUUID,
+  key _Customer.CustomerID,
+  key _Travel.TravelUUID,
+
+  /* Booking Fields */
+      _Booking.BookingID,
+      @Semantics.date: true
+      _Booking.BookingDate,
+      _Booking.AirlineID,
+      _Booking.ConnectionID,
+      @Semantics.date: true
+      _Booking.FlightDate,
+      @Semantics.amount.currencyCode: 'BookingCurrencyCode'
+      _Booking.FlightPrice,
+      _Booking.CurrencyCode               as BookingCurrencyCode,
+      _Booking.BookingStatus,
+
+  /* Customer Fields */
+      _Customer.FirstName,
+      _Customer.LastName,
+      _Customer.Title,
+      _Customer.Street,
+      _Customer.PostalCode,
+      _Customer.City,
+      _Customer.CountryCode,
+      _Customer.PhoneNumber,
+      _Customer.EMailAddress,
+
+  /* Travel Fields */
+      _Travel.TravelID,
+      _Travel.AgencyID,
+      @Semantics.date: true
+      _Travel.BeginDate,
+      @Semantics.date: true
+      _Travel.EndDate,
+      @Semantics.amount.currencyCode: 'TravelCurrencyCode'
+      _Travel.BookingFee,
+      _Travel.CurrencyCode                as TravelCurrencyCode,
+      @Semantics.amount.currencyCode: 'TravelCurrencyCode'
+      _Travel.TotalPrice
+}

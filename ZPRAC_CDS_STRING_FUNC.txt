@@ -1,0 +1,69 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_STRING_FUNC
+ * SQL VIEW: ZPRAC_SQL_STRING
+ * PURPOSE : Comprehensive string manipulation in CDS
+ * TOPIC   : String functions — CONCAT, SUBSTRING, REPLACE, etc.
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   Available string functions in ABAP CDS:
+ *
+ *   ┌─────────────────────┬──────────────────────────────────────────┐
+ *   │ Function            │ Description                              │
+ *   ├─────────────────────┼──────────────────────────────────────────┤
+ *   │ CONCAT(a, b)        │ Concatenate two strings                  │
+ *   │ CONCAT(a, sep, b)   │ Concatenate with separator (3 args)      │
+ *   │ CONCAT_WITH_SPACE   │ Concatenate with N spaces between        │
+ *   │ SUBSTRING(s, p, l)  │ Extract substring from position, length  │
+ *   │ LEFT(s, l)          │ First l characters                       │
+ *   │ RIGHT(s, l)         │ Last l characters                        │
+ *   │ LENGTH(s)           │ Character count                          │
+ *   │ REPLACE(s, old, new)│ Replace all occurrences                  │
+ *   │ ABAP_UPPER(s)       │ Uppercase (locale-aware)                 │
+ *   │ ABAP_LOWER(s)       │ Lowercase (locale-aware)                 │
+ *   │ LTRIM(s, c)         │ Remove leading characters                │
+ *   │ RTRIM(s, c)         │ Remove trailing characters               │
+ *   │ INSTR(s, substr)    │ Position of substring (1-based)          │
+ *   │ STRPOS(s, substr)   │ Position of substring (0 if not found)   │
+ *   └─────────────────────┴──────────────────────────────────────────┘
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_STRING'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - String manipulation functions'
+define view ZPRAC_CDS_STRING_FUNC
+  as select from /dmo/travel
+{
+  key travel_id     as TravelId,
+      description   as Description,
+      status        as Status,
+
+  /* ── Concatenation ── */
+      concat(description, status)                    as ConcatBasic,
+      concat(description, ' | ', status)             as ConcatWithSep,
+      concat_with_space(description, 3)              as ConcatSpaces,
+
+  /* ── Extraction ── */
+      substring(description, 1, 10)                  as ExtractFirst10,
+      left(description, 5)                           as Left5,
+      right(description, 5)                          as Right5,
+      instr(description, ' ')                        as FirstSpacePos,
+
+  /* ── Length & Position ── */
+      length(description)                            as DescLength,
+      strpos(description, 'Business')                as PosBusiness,
+
+  /* ── Transformation ── */
+      replace(description, ' ', '_')                 as DescNoSpaces,
+      replace(description, 'Business', 'Corp')       as DescReplaced,
+      abap_upper(description)                        as DescUpper,
+      abap_lower(description)                        as DescLower,
+
+  /* ── Trimming ── */
+      ltrim(travel_id, '0')                          as TravelIdTrimmed,
+      ltrim(description)                             as DescTrimLeft,
+      rtrim(description)                             as DescTrimRight
+}

@@ -1,0 +1,46 @@
+/*
+ * ====================================================================
+ * DCL SNIPPET: Access Control for CDS Views
+ * FILE TYPE:  .asr (not .txt) — DCL is a separate repository object
+ * PURPOSE :  Restrict row-level access based on user authorization
+ * TOPIC   :  Data Control Language — @AccessControl.authorizationCheck
+ * ====================================================================
+ *
+ * WHAT IS DCL?
+ *   DCL (Data Control Language) is a CDS artifact (.asr file) that
+ *   defines row-level security for CDS views. It works with PFCG
+ *   authorization objects to filter data per user.
+ *
+ * KEY CONCEPTS:
+ *   1. DCL is a SEPARATE artifact from the CDS view — file extension .asr
+ *   2. The CDS view must have @AccessControl.authorizationCheck: #CHECK
+ *   3. DCL uses ASPECT = PVZM to define mapping between fields and auth objects
+ *   4. Implicit access control is based on PFCG authorization object fields
+ *   5. DCL can restrict: SELECT, INSERT, UPDATE, DELETE (per operation)
+ *
+ * DCL SYNTAX OVERVIEW:
+ *
+ *   @EndUserText.label: 'Access control for ZPRAC_CDS_SIMPLE'
+ *   @MappingRole: true
+ *   define role ZPRAC_CDS_SIMPLE_AC {
+ *     grant select on ZPRAC_CDS_SIMPLE
+ *       where (AgencyId) = aspect pfcg_auth( /DMO/TRV, ACTVT = '03', AGENCY = $sy_user_agr() );
+ *   }
+ *
+ * COMMON DCL PATTERNS:
+ *   ┌──────────────────────────────────┬────────────────────────────────┐
+ *   │ Pattern                          │ When to use                    │
+ *   ├──────────────────────────────────┼────────────────────────────────┤
+ *   │ grant select ... where ...       │ Standard row-level restriction │
+ *   │ grant all on ...                 │ Full access (admin purpose)    │
+ *   │ inherit access for ...           │ Delegate to underlying view    │
+ *   │ aspect pfcg_auth(...)            │ Map CDS field to PFCG auth obj │
+ *   │ $sy_user_agr()                   │ User's authorization values    │
+ *   └──────────────────────────────────┴────────────────────────────────┘
+ *
+ * NOTE: DCL is not shown as a full example here because it requires
+ *       PFCG authorization objects (/DMO/TRV in flight scenario)
+ *       and is best created in ADT directly.
+ *       See SAP Help: CDS Access Control - DCL
+ * ====================================================================
+ */

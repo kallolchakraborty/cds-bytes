@@ -1,0 +1,75 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_COALESCE
+ * SQL VIEW: ZPRAC_SQL_COALESCE
+ * PURPOSE : NULL handling with COALESCE and NULLIF
+ * TOPIC   : NULL-safe expressions — prevent NULL propagation in calculations
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. COALESCE(val1, val2, ...) returns the first non-NULL value
+ *   2. Use COALESCE to provide defaults when database fields are NULL
+ *   3. NULLIF(a, b) returns NULL if a = b, otherwise returns a
+ *   4. In arithmetic, NULL propagates: total_price + 10 = NULL if total_price is NULL
+ *   5. Always COALESCE nullable fields before using in calculations
+ *   6. @Semantics.amount.currencyCode is essential for monetary fields
+ *      to enable proper currency handling in downstream consumers
+ *
+ * COMMON USE CASES:
+ *   ┌────────────────────────────────┬──────────────────────────────┐
+ *   │ Scenario                       │ COALESCE Usage               │
+ *   ├────────────────────────────────┼──────────────────────────────┤
+ *   │ Optional amounts (fee, price)  │ COALESCE(amount, 0)         │
+ *   │ Optional text (description)    │ COALESCE(text, 'No desc')   │
+ *   │ NULL-safe arithmetic           │ COALESCE(a,0) + COALESCE(b,0)│
+ *   │ Suppress equal values          │ NULLIF(begin_date, end_date) │
+ *   └────────────────────────────────┴──────────────────────────────┘
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_COALESCE'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - COALESCE and NULLIF for NULL handling'
+define view ZPRAC_CDS_COALESCE
+  as select from /dmo/travel
+{
+  @Environment.systemField: #CLIENT
+  key client            as Client,
+  key travel_id         as TravelId,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      booking_fee       as BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      total_price       as TotalPrice,
+      currency_code     as CurrencyCode,
+      description       as Description,
+      @Semantics.date: true
+      begin_date        as BeginDate,
+      @Semantics.date: true
+      end_date          as EndDate,
+
+  /* ── Replace NULLs with Default Values ── */
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      coalesce(booking_fee, 0)                        as BookingFeeFixed,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      coalesce(total_price, 0)                        as TotalPriceFixed,
+      coalesce(description, 'No Description Provided') as DescNoNull,
+
+  /* ── NULL-safe Arithmetic (prevents NULL propagation) ── */
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      coalesce(booking_fee, 0) + coalesce(total_price, 0) as TotalWithFee,
+
+  /* ── NULLIF: Returns NULL when values are equal ── */
+      @Semantics.date: true
+      nullif(begin_date, end_date)                    as NotSameDay,
+
+  /* ── Nested COALESCE ── */
+      coalesce(description, status, 'No Info')        as FirstAvailable,
+
+  /* ── CASE with NULL check ── */
+      case
+        when booking_fee is null then 'Fee Not Set'
+        when total_price is null then 'Price Not Set'
+        else 'Complete'
+      end                                             as DataQuality
+}

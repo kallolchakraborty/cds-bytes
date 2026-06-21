@@ -1,0 +1,111 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_TF_CURRENCY
+ * SQL VIEW: ZPRAC_SQL_TFCUR
+ * PURPOSE : Table Function with currency amount semantics and CAST
+ * TOPIC   : @Semantics.amount.currencyCode on table function results
+ *
+ * TABLE FUNCTION: ZPRAC_TF_CURRENCY
+ * CLASS:          ZCL_TF_CURRENCY
+ * ====================================================================
+ *
+ * IMPORTANT ANNOTATION RULE:
+ *   @Semantics.amount.currencyCode: 'CurrencyField'
+ *   MUST be placed IMMEDIATELY BEFORE the field it annotates.
+ *   The annotation references the field name that holds the currency unit.
+ *
+ *   Correct:
+ *     @Semantics.amount.currencyCode: 'CurrencyCode'
+ *     Total_Price
+ *
+ *   Wrong:
+ *     Total_Price
+ *     @Semantics.amount.currencyCode: 'CurrencyCode'
+ *     SomeOtherField
+ * ====================================================================
+ */
+
+/*
+ * ====================================================================
+ * TABLE FUNCTION: ZPRAC_TF_CURRENCY
+ * ====================================================================
+ */
+@EndUserText.label: 'Practice TF - Currency / amount semantics'
+define table function ZPRAC_TF_CURRENCY
+  with parameters
+    p1_travel_id   : /dmo/travel_id,
+    p2_customer_id : /dmo/customer_id
+returns
+{
+  Client      : abap.clnt;
+  Travel_ID   : /dmo/travel_id;
+  Booking_Fee : /dmo/booking_fee;
+  Total_Price : /dmo/total_price;
+}
+implemented by method
+  ZCL_TF_CURRENCY=>get_details;
+
+/*
+ * ====================================================================
+ * AMDP CLASS: ZCL_TF_CURRENCY
+ * ====================================================================
+ */
+CLASS zcl_tf_currency DEFINITION PUBLIC.
+
+  PUBLIC SECTION.
+    INTERFACES: if_amdp_marker_hdb.
+    CLASS-METHODS: get_details FOR TABLE FUNCTION zprac_tf_currency.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_tf_currency IMPLEMENTATION.
+
+  METHOD get_details
+    BY DATABASE FUNCTION FOR HDB LANGUAGE SQLSCRIPT
+    OPTIONS READ-ONLY
+    USING zprac_cds_simple.
+
+    RETURN SELECT Client_Name AS Client,
+                  TravelId    AS Travel_ID,
+                  BookingFee  AS Booking_Fee,
+                  TotalPrice  AS Total_Price
+           FROM zprac_cds_simple
+           WHERE TravelId   = :p1_travel_id
+             AND CustomerId = :p2_customer_id;
+
+  ENDMETHOD.
+
+ENDCLASS.
+
+/*
+ * ====================================================================
+ * CDS VIEW CONSUMING — WITH PROPER @Semantics ANNOTATIONS
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_TFCUR'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - TF with currency semantics'
+define view ZPRAC_CDS_TF_CURRENCY
+  as select from ZPRAC_TF_CURRENCY( p1_travel_id: '00000009', p2_customer_id: '000115' )
+{
+  Travel_ID,
+
+  /*
+   * Currency field must be annotated BEFORE the amount fields
+   * Reference field: the currency_code column (currently a CAST literal)
+   */
+  cast('CURR' as /dmo/currency_code) as CurrencyCode,
+
+  /*
+   * @Semantics.amount.currencyCode references the field 'CurrencyCode'
+   * defined above. The annotation goes IMMEDIATELY before the amount field.
+   */
+  @Semantics.amount.currencyCode: 'CurrencyCode'
+  cast(Booking_Fee as /dmo/booking_fee) as BookingFeeDisplay,
+
+  @Semantics.amount.currencyCode: 'CurrencyCode'
+  cast(Total_Price as /dmo/total_price) as TotalPriceDisplay
+}

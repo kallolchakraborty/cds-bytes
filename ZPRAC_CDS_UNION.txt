@@ -1,0 +1,62 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_UNION
+ * SQL VIEW: ZPRAC_SQL_UNION
+ * PURPOSE : UNION and UNION ALL — combining two queries vertically
+ * TOPIC   : Set operations — UNION / UNION ALL / INTERSECT / EXCEPT
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. UNION ALL: Combines results of two SELECTs (duplicates allowed)
+ *   2. UNION:     Same as UNION ALL but removes duplicates (uses sort)
+ *   3. Both queries must have the SAME NUMBER of columns with
+ *      COMPATIBLE data types
+ *   4. Column names are taken from the FIRST SELECT
+ *   5. UNION ALL is FASTER than UNION because it doesn't sort for dedup
+ *   6. ORDER BY sorts the final combined result (applied at the end)
+ *   7. @Semantics annotations on UNION fields apply to the combined result.
+ *      Each SELECT's column type must match; annotations use the first
+ *      SELECT's field names.
+ *
+ * USE CASE:
+ *   Combine Travel and Booking into a single timeline of events.
+ *   Travel is the "header", Booking is the "item".
+ *   A RecordType discriminator identifies which kind each row is.
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_UNION'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - UNION ALL combining Travel + Booking'
+define view ZPRAC_CDS_UNION
+  as select from /DMO/I_Travel_D
+
+{
+  key TravelID               as Identifier,
+      @Semantics.date: true
+      BeginDate              as EventDate,
+      @Semantics.date: true
+      EndDate                as EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      TotalPrice             as Amount,
+      Description            as Text,
+      'Travel'               as RecordType,
+      TravelUUID             as SourceUUID
+}
+
+union all
+
+  select from /DMO/I_Booking_D
+{
+  key BookingID              as Identifier,
+      @Semantics.date: true
+      BookingDate            as EventDate,
+      @Semantics.date: true
+      FlightDate             as EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      FlightPrice            as Amount,
+      ''                     as Text,
+      'Booking'              as RecordType,
+      BookingUUID            as SourceUUID
+}

@@ -1,0 +1,76 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_GROUP_BY
+ * SQL VIEW: ZPRAC_SQL_GROUP_BY
+ * PURPOSE : Aggregation with GROUP BY on Booking data
+ * TOPIC   : Aggregate functions — SUM, COUNT, AVG, MIN, MAX, COUNT(DISTINCT)
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. All non-aggregated fields in the SELECT list MUST be in GROUP BY
+ *   2. Available aggregate functions:
+ *      ┌──────────────────┬────────────────────────────────┐
+ *      │ Function         │ Description                    │
+ *      ├──────────────────┼────────────────────────────────┤
+ *      │ COUNT(*)         │ Number of rows in group        │
+ *      │ COUNT( field )   │ Number of non-NULL values      │
+ *      │ COUNT(DISTINCT x)│ Unique non-NULL values         │
+ *      │ SUM( field )     │ Total (numeric only)           │
+ *      │ AVG( field )     │ Average (numeric only)         │
+ *      │ MIN( field )     │ Minimum value                  │
+ *      │ MAX( field )     │ Maximum value                  │
+ *      │ STRING_AGG(...)  │ Concatenate strings (HANA)     │
+ *      └──────────────────┴────────────────────────────────┘
+ *   3. Aggregation produces a new semantic layer — @Semantics annotations
+ *      should be added to aggregated fields for downstream consumption
+ *   4. GROUP BY fields are implicitly keys of the aggregated result
+ *
+ * USE CASE:
+ *   Per-customer booking summary: how many bookings, total spent,
+ *   average price, cheapest and most expensive flight.
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_GROUP_BY'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Aggregation: SUM, COUNT, AVG, MIN, MAX with GROUP BY'
+define view ZPRAC_CDS_GROUP_BY
+  as select from /DMO/I_Booking_D
+{
+  /*
+   * Grouping field — all non-aggregated fields must appear here
+   */
+  key CustomerID,
+
+  /*
+   * Aggregate functions
+   * Currency reference field added for @Semantics.amount annotations.
+   * In a real scenario, use COALESCE to handle mixed currencies or filter
+   * to a single currency in WHERE clause.
+   */
+      count(*)                                    as BookingCount,
+      count(FlightPrice)                          as BookingsWithPrice,
+      count(distinct AirlineID)                   as DistinctAirlines,
+
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      sum(FlightPrice)                            as TotalSpent,
+
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      avg(FlightPrice)                            as AvgFlightPrice,
+
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      min(FlightPrice)                            as MinFlightPrice,
+
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      max(FlightPrice)                            as MaxFlightPrice,
+
+      /*
+       * Currency reference field — all amount annotations reference this.
+       * In production, consider currencies from a single booking or filter
+       * by a specific currency to avoid mixing currency types.
+       */
+      min(CurrencyCode)                           as CurrencyCode
+
+}
+group by CustomerID

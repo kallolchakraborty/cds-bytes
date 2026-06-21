@@ -1,0 +1,105 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_MDX_EXT
+ * SQL VIEW: ZPRAC_SQL_MDXEXT
+ * PURPOSE : Metadata Extension pattern (separating UI annotations)
+ * TOPIC   : @Metadata.allowExtensions + Metadata Extension artifact
+ * ====================================================================
+ *
+ * WHAT IS A METADATA EXTENSION?
+ *   A separate CDS artifact that adds UI/analytics annotations on top
+ *   of an existing CDS view WITHOUT modifying the view itself.
+ *
+ * BENEFITS:
+ *   ✓ The core data model stays clean (no UI annotations mixed in)
+ *   ✓ Different consumers can have different metadata extensions
+ *   ✓ Upgrade-safe — core view doesn't change when UI requirements change
+ *   ✓ Multiple extensions can be stacked
+ *
+ * HOW IT WORKS:
+ *   1. The base view has @Metadata.allowExtensions: true
+ *   2. A separate .asr file (Metadata Extension) uses ANNOTATE VIEW
+ *   3. The extension is activated independently
+ *   4. SAP S/4HANA uses this extensively for Fiori apps
+ *
+ * SYNTAX OF METADATA EXTENSION:
+ *   @Metadata.layer: #CORE         // Who owns this: #CORE / #CUSTOMER / #PARTNER
+ *   annotate view ZPRAC_CDS_MDX_EXT with
+ *   {
+ *     @UI.facet        : [ { ... } ]
+ *     @UI.lineItem     : [ { position: 10 } ]
+ *     FieldName;
+ *   }
+ *
+ * IMPORTANT:
+ *   Base views with @Metadata.allowExtensions: true should still include
+ *   all @Semantics annotations on fields — the metadata extension only adds
+ *   UI-specific annotations, not semantic/analytic annotations.
+ * ====================================================================
+ */
+
+/*
+ * ====================================================================
+ * BASE CDS VIEW (with extension enabled)
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_MDXEXT'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Base view for Metadata Extension'
+@Metadata.allowExtensions: true
+define view ZPRAC_CDS_MDX_EXT
+  as select from /dmo/travel
+{
+  @Environment.systemField: #CLIENT
+  key client            as Client,
+  key travel_id         as TravelId,
+      agency_id         as AgencyId,
+      customer_id       as CustomerId,
+      @Semantics.date: true
+      begin_date        as BeginDate,
+      @Semantics.date: true
+      end_date          as EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      booking_fee       as BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      total_price       as TotalPrice,
+      currency_code     as CurrencyCode,
+      description       as Description,
+      status            as Status
+}
+
+/*
+ * ====================================================================
+ * METADATA EXTENSION (separate artifact, not inside the view)
+ *
+ * Create as a separate file: ZPRAC_CDS_MDX_EXT.asr
+ * 
+ * @Metadata.layer: #CORE
+ * annotate view ZPRAC_CDS_MDX_EXT with
+ * {
+ *   @UI.facet: [
+ *     {
+ *       id: 'TravelFacet',
+ *       purpose: #STANDARD,
+ *       type: #IDENTIFICATION_REFERENCE,
+ *       label: 'Travel Details'
+ *     }
+ *   ]
+ *   TravelId;
+ *
+ *   @UI.lineItem: [ { position: 10, label: 'Travel ID' } ]
+ *   @UI.identification: [ { position: 10 } ]
+ *   TravelId;
+ *
+ *   @UI.lineItem: [ { position: 20, label: 'Total Price' } ]
+ *   @Semantics.amount.currencyCode: 'CurrencyCode'
+ *   TotalPrice;
+ *
+ *   @UI.lineItem: [ { position: 30, label: 'Status' } ]
+ *   @UI.selectionField: [ { position: 10 } ]
+ *   Status;
+ * }
+ * ====================================================================
+ */

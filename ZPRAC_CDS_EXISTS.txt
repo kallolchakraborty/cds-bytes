@@ -1,0 +1,77 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_EXISTS
+ * SQL VIEW: ZPRAC_SQL_EXISTS
+ * PURPOSE : EXISTS and NOT EXISTS subqueries in WHERE clause
+ * TOPIC   : Correlated subqueries — existence checks without JOIN
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. EXISTS checks if at least one row exists in the subquery
+ *   2. NOT EXISTS ensures NO rows exist in the subquery
+ *   3. The subquery is CORRELATED — it references outer query fields
+ *   4. EXISTS is often more efficient than LEFT JOIN + NULL check
+ *   5. EXISTS stops scanning as soon as one match is found
+ *
+ * EXISTS vs JOIN:
+ *   ┌──────────────┬───────────────────────────┬─────────────────────┐
+ *   │ Scenario     │ EXISTS                     │ JOIN                │
+ *   ├──────────────┼───────────────────────────┼─────────────────────┤
+ *   │ "Has at least│ EXISTS + correlated subq  │ JOIN + DISTINCT     │
+ *   │  one XXX"    │ (stops on first match)    │ (processes all rows)│
+ *   │ "Has no XXX" │ NOT EXISTS (can use index) │ LEFT JOIN + NULL    │
+ *   └──────────────┴───────────────────────────┴─────────────────────┘
+ *
+ * USE CASES:
+ *   EXISTS:  Find travels that have at least one 'New' (N) booking
+ *   NOT EXISTS: Find travels that have NO 'Accepted' (B) bookings
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_EXISTS'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - EXISTS / NOT EXISTS subqueries'
+define view ZPRAC_CDS_EXISTS
+  as select from /DMO/I_Travel_D as _Travel
+{
+  key _Travel.TravelUUID,
+      _Travel.TravelID,
+      _Travel.AgencyID,
+      _Travel.CustomerID,
+      @Semantics.date: true
+      _Travel.BeginDate,
+      @Semantics.date: true
+      _Travel.EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      _Travel.TotalPrice,
+      _Travel.CurrencyCode,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      _Travel.BookingFee,
+      _Travel.Description,
+      _Travel.Status
+
+}
+where
+  /*
+   * EXISTS: Returns travels that have AT LEAST ONE booking with status 'N' (New).
+   * For each row in _Travel, the subquery checks if a matching booking exists.
+   * As soon as one match is found, EXISTS returns TRUE and moves to next row.
+   */
+  exists (
+    select from /DMO/I_Booking_D as _Booking
+      where _Booking.TravelUUID = _Travel.TravelUUID
+        and _Booking.BookingStatus = 'N'
+  )
+
+/*
+ * ALTERNATIVE: NOT EXISTS — uncomment this and comment the EXISTS above:
+ *
+ *   and not exists (
+ *     select from /DMO/I_Booking_D as _Booking
+ *       where _Booking.TravelUUID = _Travel.TravelUUID
+ *         and _Booking.BookingStatus = 'B'
+ *   )
+ *
+ * NOT EXISTS: Returns travels that have NO 'Accepted' (B) bookings.
+ */

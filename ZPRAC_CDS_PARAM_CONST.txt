@@ -1,0 +1,45 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_PARAM_CONST
+ * SQL VIEW: ZPRAC_SQL_PARAM_C
+ * PURPOSE : Passing constants to a parameterized CDS view
+ * TOPIC   : View on a parameterized view using hardcoded values
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. A non-parameterized view can consume a parameterized view
+ *      by passing constant values for the parameters
+ *   2. Syntax: view_name( param1: 'value1', param2: 'value2' )
+ *   3. This is useful for creating pre-filtered views (e.g. by agency)
+ *   4. Alternative: pass $parameters.variable to forward ABAP params
+ *   5. @Semantics annotations must be re-declared at each view layer
+ *      for proper downstream consumption (OData, Analytics)
+ *
+ * WHEN TO USE:
+ *   - Creating a fixed-reporting view filtered by specific criteria
+ *   - Creating a layer of pre-filtered abstractions on parameterized views
+ *   - Testing with hardcoded test data during development
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_PARAM_C'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Parameterized view with constants'
+define view ZPRAC_CDS_PARAM_CONST
+  as select from ZPRAC_CDS_PARAM( p1_travel_id: '00000009', p2_agency_id: '070032' )
+{
+  key TravelId,
+      AgencyId,
+      CustomerId,
+      @Semantics.date: true
+      BeginDate,
+      @Semantics.date: true
+      EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      TotalPrice,
+      CurrencyCode,
+      Description
+}

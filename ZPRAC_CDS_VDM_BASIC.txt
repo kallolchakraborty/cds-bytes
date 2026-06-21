@@ -1,0 +1,75 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_VDM_BASIC
+ * SQL VIEW: ZPRAC_SQL_VDMBAS
+ * PURPOSE : VDM Basic (Interface) View — the foundation layer
+ * TOPIC   : SAP Virtual Data Model — View Type: #BASIC
+ * ====================================================================
+ *
+ * WHAT IS VDM?
+ *   SAP's Virtual Data Model standardizes CDS view development into
+ *   layered view types. Following VDM ensures:
+ *     ✓ Consistent naming and structure across the organization
+ *     ✓ Clear separation of concerns between layers
+ *     ✓ Easier maintenance and onboarding of new developers
+ *     ✓ Reusable building blocks for Fiori, Analytics, and OData
+ *
+ * VDM VIEW TYPES:
+ *   ┌──────────────┬──────────┬────────────────────────────────┐
+ *   │ Type         │ Notation │ Purpose                        │
+ *   ├──────────────┼──────────┼────────────────────────────────┤
+ *   │ #BASIC       │ I_*      │ Interface - direct table access│
+ *   │ #COMPOSITE   │ C_*      │ Business logic / calculations  │
+ *   │ #CONSUMPTION │ C_*      │ Final layer for consumers      │
+ *   │ #PRIVATE     │ P_*      │ Internal helpers (not consumed)│
+ *   └──────────────┴──────────┴────────────────────────────────┘
+ *
+ * BASIC VIEW CHARACTERISTICS:
+ *   - Directly built on database tables or other #BASIC views
+ *   - No/minimal business logic — pure data projection
+ *   - Full field semantics (@Semantics.amount, @Semantics.date, etc.)
+ *   - Named with I_ prefix in SAP standard: e.g. I_Travel_D
+ *   - Foundation for all downstream composite/consumption views
+ *
+ * THIS EXAMPLE:
+ *   @VDM.viewType: #BASIC  → Marks this as an Interface/Basic view
+ *   @Analytics.dataCategory: #DIMENSION  → Used as a dimension in analytics
+ *   @ObjectModel.dataType: #BASIC        → Core data type
+ *   All fields have full @Semantics annotations (VDM requirement)
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_VDMBAS'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - VDM Basic (Interface) View Type'
+@VDM.viewType: #BASIC
+@Analytics.dataCategory: #DIMENSION
+@ObjectModel.dataType: #BASIC
+@OData.publish: true
+define view ZPRAC_CDS_VDM_BASIC
+  as select from ZPRAC_CDS_SIMPLE
+{
+  key TravelId,
+      AgencyId,
+      CustomerId,
+      @Semantics.date: true
+      BeginDate,
+      @Semantics.date: true
+      EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      TotalPrice,
+      CurrencyCode,
+      Description,
+      Status,
+      @Semantics.user.createdBy: true
+      Createdby,
+      @Semantics.date: true
+      Createdat,
+      @Semantics.user.lastChangedBy: true
+      Lastchangedby,
+      @Semantics.date: true
+      Lastchangedat
+}

@@ -1,0 +1,91 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_TF_PARAM
+ * SQL VIEW: ZPRAC_SQL_TFPAR
+ * PURPOSE : CDS View consuming a parameterized Table Function
+ * TOPIC   : Table Function with input parameters
+ *
+ * TABLE FUNCTION: ZPRAC_TF_PARAM
+ * CLASS:          ZCL_TF_PARAM
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. Table function parameters are defined WITH PARAMETERS
+ *   2. Return structure includes only output columns (not params)
+ *   3. Pass constants via: TF_NAME( param1: 'value1', param2: 'value2' )
+ *   4. Pass CDS parameters via: TF_NAME( param1: $parameters.p1 )
+ *   5. Parameters in SQLScript are referenced with :param_name
+ * ====================================================================
+ */
+
+/*
+ * ====================================================================
+ * TABLE FUNCTION: ZPRAC_TF_PARAM
+ * ====================================================================
+ */
+@EndUserText.label: 'Practice TF - Parameterized table function'
+define table function ZPRAC_TF_PARAM
+  with parameters
+    p1_travel_id   : /dmo/travel_id,
+    p2_customer_id : /dmo/customer_id
+returns
+{
+  Client    : abap.clnt;
+  Travel_ID : /dmo/travel_id;
+  AgencyId  : /dmo/agency_id;
+}
+implemented by method
+  zcl_tf_param=>get_details;
+
+/*
+ * ====================================================================
+ * AMDP CLASS: ZCL_TF_PARAM
+ * ====================================================================
+ */
+CLASS zcl_tf_param DEFINITION PUBLIC.
+
+  PUBLIC SECTION.
+    INTERFACES: if_amdp_marker_hdb.
+    CLASS-METHODS: get_details FOR TABLE FUNCTION zprac_tf_param.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_tf_param IMPLEMENTATION.
+
+  METHOD get_details
+    BY DATABASE FUNCTION FOR HDB LANGUAGE SQLSCRIPT
+    OPTIONS READ-ONLY
+    USING zprac_cds_simple.
+
+    /*
+     * SQLScript SELECT with parameterized WHERE clause.
+     * Parameters are referenced with :param_name
+     */
+    RETURN SELECT Client_Name AS Client,
+                  TravelId    AS Travel_ID,
+                  AgencyId    AS AgencyId
+           FROM zprac_cds_simple
+           WHERE TravelId   = :p1_travel_id
+             AND CustomerId = :p2_customer_id;
+
+  ENDMETHOD.
+
+ENDCLASS.
+
+/*
+ * ====================================================================
+ * CDS VIEW CONSUMING THE TABLE FUNCTION WITH CONSTANTS
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_TFPAR'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Table Function with parameters'
+define view ZPRAC_CDS_TF_PARAM
+  as select from ZPRAC_TF_PARAM( p1_travel_id: '00000009', p2_customer_id: '000115' )
+{
+  Travel_ID,
+  AgencyId
+}

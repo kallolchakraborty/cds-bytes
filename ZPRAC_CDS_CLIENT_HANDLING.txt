@@ -1,0 +1,63 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_CLIENT_HANDLING
+ * SQL VIEW: ZPRAC_SQL_CLIENT
+ * PURPOSE : Client handling algorithms — multi-client data access
+ * TOPIC   : @ClientHandling.algorithm — controlling client behavior
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. @ClientHandling.algorithm controls how the ABAP framework
+ *      handles the MANDT (client) field
+ *   2. Available algorithms:
+ *      ┌────────────────────────┬─────────────────────────────────────┐
+ *      │ Algorithm              │ Behavior                             │
+ *      ├────────────────────────┼─────────────────────────────────────┤
+ *      │ #AUTOMATIC_RHS         │ Default — add implicit CLIENT = sy-mandt │
+ *      │ #PROTECTED             │ Inherit client from source (read-only) │
+ *      │ #AUTOMATIC             │ Add implicit client (like RHS)       │
+ *      │ #INHERITED             │ Client field inherited from source   │
+ *      │ #RHS_ONLY              │ Only Right-Hand Side implicit filter │
+ *      │ #DONT_SHARE            │ No client sharing across sources    │
+ *      │ #NO_CLIENT             │ No client handling at all            │
+ *      └────────────────────────┴─────────────────────────────────────┘
+ *   3. #AUTOMATIC_RHS is the DEFAULT — adds AND client = $session.client
+ *   4. #INHERITED: the view does NOT add its own client filter but
+ *      relies on the base view/view's client handling
+ *   5. Use #PROTECTED for views that should not add client filters
+ *      (e.g., cross-client views or local temporary data)
+ *   6. The client field must be present in the view or an error occurs
+ *   7. @Environment.systemField: #CLIENT on the field is good practice
+ *
+ * USE CASE:
+ *   Standard views need #AUTOMATIC_RHS (default) to ensure client
+ *   separation. Cross-client reference data (like currencies, units)
+ *   may use #INHERITED or #NO_CLIENT.
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_CLIENT'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Client handling algorithm (#AUTOMATIC_RHS)'
+@ClientHandling.algorithm: #AUTOMATIC_RHS
+define view ZPRAC_CDS_CLIENT_HANDLING
+  as select from /dmo/travel
+{
+  @Environment.systemField: #CLIENT
+  key client            as Client,
+  key travel_id         as TravelId,
+      agency_id         as AgencyId,
+      customer_id       as CustomerId,
+      @Semantics.date: true
+      begin_date        as BeginDate,
+      @Semantics.date: true
+      end_date          as EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      booking_fee       as BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      total_price       as TotalPrice,
+      currency_code     as CurrencyCode,
+      description       as Description,
+      status            as Status
+}

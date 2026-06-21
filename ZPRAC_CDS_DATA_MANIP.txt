@@ -1,0 +1,97 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_DATA_MANIP
+ * SQL VIEW: ZPRAC_SQL_DAT_MAN
+ * PURPOSE : Field-level data manipulation — string, arithmetic, CAST, CASE
+ * TOPIC   : Data manipulation expressions in the SELECT list
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. Fields can be transformed inline without a separate ABAP layer
+ *   2. Supported operations:
+ *      ┌─────────────────┬──────────────────────────────────┐
+ *      │ Category        │ Examples                         │
+ *      ├─────────────────┼──────────────────────────────────┤
+ *      │ Arithmetic      │ +, -, *, /, DIVISION, MOD        │
+ *      │ String          │ CONCAT, SUBSTRING, REPLACE, etc. │
+ *      │ Conversion      │ CAST, COALESCE, NULLIF           │
+ *      │ Conditional     │ CASE ... WHEN ... THEN ... END   │
+ *      │ Date            │ DATS_ADD_DAYS, etc.              │
+ *      └─────────────────┴──────────────────────────────────┘
+ *   3. Use field aliases to give computed fields meaningful names
+ *   4. @Semantics annotations on computed fields enable downstream OData/analytics
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_DAT_MAN'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Data manipulation (CASE, CAST, arithmetic, string)'
+define view ZPRAC_CDS_DATA_MANIP
+  as select from /dmo/travel
+{
+
+  /* ───── Key & Identity Fields ───── */
+  key ltrim(travel_id, '0')   as TravelId,          -- Removing leading zeros
+      agency_id               as AgencyId,
+      customer_id             as CustomerId,
+      @Semantics.date: true
+      begin_date              as BeginDate,
+      @Semantics.date: true
+      end_date                as EndDate,
+
+  /* ───── Arithmetic Operations ───── */
+      currency_code           as CurrencyCode,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      booking_fee             as BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      total_price             as TotalPrice,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      ( total_price - 10 )    as DiscountedPrice,    -- Simple subtraction
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      ( total_price * 1.19 )  as PriceWithTax,       -- Tax calculation
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      division(total_price, 3, 2) as PriceSplit3,    -- DIVISION with 2 decimals
+      mod(cast(total_price as abap.int2), 10) as PriceMod10,  -- MODULUS via MOD
+      ( total_price / booking_fee ) as PriceToFeeRatio,
+
+  /* ───── String Operations ───── */
+      description               as Description,
+      concat(description, ' - ', status)    as DescWithStatus,    -- 3-arg CONCAT
+      concat_with_space(description, 3)     as DescWithSpaces,    -- CONCAT + spaces
+      substring(description, 1, 10)         as DescShort,         -- LEFT(field,10)
+      left(description, 5)                  as DescLeft5,
+      right(description, 5)                 as DescRight5,
+      length(description)                   as DescLength,
+      replace(description, ' ', '_')        as DescNoSpace,       -- Replace spaces
+      abap_upper(description)               as DescUpper,         -- Uppercase
+      abap_lower(description)               as DescLower,         -- Lowercase
+      ltrim(description)                    as DescTrimLeft,      -- Left trim
+      rtrim(description)                    as DescTrimRight,     -- Right trim
+
+  /* ───── Conditional Logic (CASE) ───── */
+      case status                    -- Simple CASE: compare one field
+      when 'B' then 'Accepted'
+      when 'N' then 'New'
+      when 'C' then 'Completed'
+      when 'X' then 'Cancelled'
+      else 'Unknown'
+      end                           as StatusDescription,
+
+      case                          -- Searched CASE: different conditions
+      when begin_date > end_date   then 'Invalid'
+      when booking_fee > total_price then 'Fee exceeds price'
+      when total_price > 5000      then 'High Value'
+      else 'Standard'
+      end                           as TripCategory,
+
+  /* ───── Type Conversions via CAST ───── */
+      @Semantics.date: true
+      cast(begin_date as abap.dats)         as BeginDats,
+
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      cast(total_price as abap.dec(10, 2))  as TotalPriceDec,
+
+      cast(travel_id as abap.numc(10))      as TravelIdNumc
+
+}

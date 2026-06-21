@@ -1,0 +1,66 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_OBJECT_MODEL
+ * SQL VIEW: ZPRAC_SQL_OBJMOD
+ * PURPOSE : @ObjectModel annotations for RAP / OData / Analytics
+ * TOPIC   : @ObjectModel — foreignKey, semanticKey, text, representativeKey
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. @ObjectModel annotations define the business object structure
+ *   2. They are used by RAP (ABAP RESTful Application Programming Model)
+ *      for service definition, draft handling, and OData generation
+ *   3. Common @ObjectModel annotations:
+ *      ┌────────────────────────────┬────────────────────────────────┐
+ *      │ Annotation                 │ Purpose                        │
+ *      ├────────────────────────────┼────────────────────────────────┤
+ *      │ @ObjectModel.foreignKey    │ Marks a field as foreign key   │
+ *      │ @ObjectModel.semanticKey   │ Defines the business key       │
+ *      │ @ObjectModel.representative│ Key that uniquely identifies   │
+ *      │ @ObjectModel.text          │ Language-dependent text        │
+ *      │ @ObjectModel.association   │ Association metadata           │
+ *      │ @ObjectModel.writeDraft    │ Draft-enabled for transaction  │
+ *      │ @ObjectModel.dataType      │ #BASIC / #COMPOSITE / #CUBE   │
+ *      │ @ObjectModel.compositionRoot│ Root entity of composition    │
+ *      │ @ObjectModel.template      │ Template category              │
+ *      └────────────────────────────┴────────────────────────────────┘
+ *   4. These annotations are critical for RAP BO definitions
+ *   5. @ObjectModel.foreignKey.association references the association
+ *      (not shown here but used in RAP context)
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_OBJMOD'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - @ObjectModel annotations (foreignKey, semanticKey)'
+@ObjectModel.representativeKey: 'TravelId'
+@ObjectModel.compositionRoot: true
+@ObjectModel.writeDraft: true
+@ObjectModel.dataType: #BASIC
+@ObjectModel.template: #NOT_EXTENSIBLE
+define view ZPRAC_CDS_OBJECT_MODEL
+  as select from /dmo/travel
+{
+  @Environment.systemField: #CLIENT
+  key client            as Client,
+  key travel_id         as TravelId,
+      @ObjectModel.foreignKey.association: 'ZPRAC_CDS_ASSOCIATION'
+      @ObjectModel.text: {
+        association: 'ZPRAC_CDS_ASSOCIATION',
+        element: 'LastName'
+      }
+      agency_id         as AgencyId,
+      customer_id       as CustomerId,
+      @Semantics.date: true
+      begin_date        as BeginDate,
+      @Semantics.date: true
+      end_date          as EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      booking_fee       as BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      total_price       as TotalPrice,
+      currency_code     as CurrencyCode,
+      description       as Description,
+      status            as Status
+}

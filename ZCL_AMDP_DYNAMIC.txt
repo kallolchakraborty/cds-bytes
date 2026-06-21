@@ -1,0 +1,84 @@
+/*
+ * ====================================================================
+ * AMDP CLASS: ZCL_AMDP_DYNAMIC
+ * PURPOSE : AMDP with dynamic WHERE clause via APPLY_FILTER
+ * TOPIC   : AMDP with dynamic select-options (range tables)
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. APPLY_FILTER applies a WHERE condition dynamically at runtime
+ *   2. The filter is a string passed from ABAP (e.g. "TRAVELID = '00000009'")
+ *   3. APPLY_FILTER can work on a CDS view directly OR on a temp table
+ *   4. cl_shdb_seltab=>combine_seltabs converts ABAP RANGES to SQL WHERE string
+ *   5. The filter string uses HANA SQL syntax (field names in UPPERCASE)
+ *
+ * USAGE IN ABAP REPORT:
+ *
+ *   DATA lv_travel_id TYPE /dmo/travel_id.
+ *   SELECT-OPTIONS: s_travel_id FOR lv_travel_id.
+ *
+ *   " Convert ABAP SELECT-OPTIONS to a WHERE clause string
+ *   DATA(lv_where) = cl_shdb_seltab=>combine_seltabs(
+ *     it_named_seltabs = VALUE #(
+ *       ( name = 'TRAVELID' dref = REF #( s_travel_id[] ) ) ) ).
+ *
+ *   zcl_amdp_dynamic=>get_details(
+ *     EXPORTING
+ *       im_select_op      = lv_where
+ *     IMPORTING
+ *       ex_travel_details = DATA(lt_travel) ).
+ *
+ * ====================================================================
+ */
+CLASS zcl_amdp_dynamic DEFINITION PUBLIC.
+
+  PUBLIC SECTION.
+    INTERFACES if_amdp_marker_hdb.
+
+    TYPES: BEGIN OF ty_details,
+             TravelId   TYPE /dmo/travel_id,
+             AgencyId   TYPE /dmo/agency_id,
+             CustomerId TYPE /dmo/customer_id,
+             BookingFee TYPE /dmo/booking_fee,
+           END OF ty_details,
+           tt_details TYPE TABLE OF ty_details.
+
+    " Method with dynamic WHERE clause as STRING parameter
+    CLASS-METHODS: get_details
+      IMPORTING
+        VALUE(im_select_op)      TYPE string
+      EXPORTING
+        VALUE(ex_travel_details) TYPE tt_details.
+
+ENDCLASS.
+
+CLASS zcl_amdp_dynamic IMPLEMENTATION.
+
+  METHOD get_details
+    BY DATABASE PROCEDURE FOR HDB LANGUAGE SQLSCRIPT
+    OPTIONS READ-ONLY
+    USING zprac_cds_simple.
+
+    /*
+     * Step 1: Fetch ALL data from CDS view into internal table
+     */
+    EX_TRAVEL_DETAILS =
+      SELECT TravelId,
+             AgencyId,
+             CustomerId,
+             BookingFee
+      FROM  zprac_cds_simple;
+
+    /*
+     * Step 2: Apply the dynamic filter at runtime
+     *   APPLY_FILTER( <source>, <filter_string> )
+     *
+     *   Alternative: APPLY_FILTER directly on the CDS view:
+     *     ex_travel_details = APPLY_FILTER( zprac_cds_simple, :im_select_op );
+     */
+    ex_travel_details =
+      APPLY_FILTER( :ex_travel_details, :im_select_op );
+
+  ENDMETHOD.
+
+ENDCLASS.

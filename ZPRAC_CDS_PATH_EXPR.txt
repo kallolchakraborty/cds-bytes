@@ -1,0 +1,72 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_PATH_EXPR
+ * SQL VIEW: ZPRAC_SQL_PATH
+ * PURPOSE : Consuming association fields via path expressions
+ * TOPIC   : Path expressions — dot notation traversal on associations
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. Path expressions traverse associations using dot notation:
+ *      _AssociationAlias.FieldName → resolves to the associated field
+ *   2. Only works with cardinality [1] or [0..1] — the framework needs
+ *      to guarantee at most one row to avoid ambiguity
+ *   3. The framework generates the necessary JOIN automatically —
+ *      no explicit JOIN syntax needed
+ *   4. Multiple levels are supported: _Assoc1._Assoc2.Field
+ *   5. Path expressions can also be used in WHERE clause
+ *
+ * SYNTAX:
+ *   define view ... as select from SourceView
+ *     { _AssociationAlias.Field1, _AssociationAlias.Field2 }
+ *
+ * The association must exist on the source view AND be exposed publicly.
+ * Here we consume ZPRAC_CDS_ASSOCIATION which exposes _Customer publicly.
+ *
+ * COMPARE WITH JOIN:
+ *   This version is CLEANER than writing a JOIN — the association definition
+ *   is centralized in one place (ZPRAC_CDS_ASSOCIATION) and reused here.
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_PATH'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Path expressions consuming associations'
+define view ZPRAC_CDS_PATH_EXPR
+
+  /*
+   * Source view: ZPRAC_CDS_ASSOCIATION has _Customer association exposed.
+   * We consume its fields via path expressions — no JOIN needed here.
+   */
+  as select from ZPRAC_CDS_ASSOCIATION as _Assoc
+
+{
+  key _Assoc.BookingUUID,
+      _Assoc.BookingID,
+      @Semantics.date: true
+      _Assoc.BookingDate,
+      _Assoc.CustomerID,
+      _Assoc.AirlineID,
+      _Assoc.ConnectionID,
+      @Semantics.date: true
+      _Assoc.FlightDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      _Assoc.FlightPrice,
+      _Assoc.CurrencyCode,
+
+  /*
+   * Path expression: traverse the _Customer association on the source view.
+   * The framework generates an implicit JOIN to /DMO/I_Customer.
+   */
+      _Assoc._Customer.FirstName,
+      _Assoc._Customer.LastName,
+      _Assoc._Customer.Title,
+      _Assoc._Customer.City,
+      _Assoc._Customer.CountryCode,
+      _Assoc._Customer.PhoneNumber,
+      _Assoc._Customer.EMailAddress,
+
+  /* Nested path: multiple levels (if available on Customer) */
+      _Assoc._Customer.CountryCode
+}

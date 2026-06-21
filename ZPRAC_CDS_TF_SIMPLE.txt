@@ -1,0 +1,100 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_TF_SIMPLE
+ * SQL VIEW: ZPRAC_SQL_TFSIM
+ * PURPOSE : CDS View consuming a simple Table Function
+ * TOPIC   : Table Function — basic pattern
+ *
+ * TABLE FUNCTION: ZPRAC_TF_SIMPLE
+ * CLASS:          ZCL_TF_SIMPLE
+ * ====================================================================
+ *
+ * WHAT IS A TABLE FUNCTION?
+ *   A Table Function is a CDS artifact that delegates the SQL logic
+ *   to an AMDP method (HANA SQLScript). This allows:
+ *     ✓ Complex procedural logic (loops, IF/ELSE, temp tables)
+ *     ✓ HANA-specific features (Fuzzy Search, PAL, etc.)
+ *     ✓ SQLScript advanced constructs not possible in CDS
+ *
+ * KEY POINTS:
+ *   1. Parameters are optional (none here — simple case)
+ *   2. Always needs a RETURN parameter (structure of output columns)
+ *   3. Requires an AMDP class with IF_AMDP_MARKER_HDB interface
+ *   4. Static method with BY DATABASE FUNCTION FOR HDB LANGUAGE SQLSCRIPT
+ *   5. No extra annotations needed in the consuming CDS view
+ *   6. Table functions support JOINs, UNIONs like regular CDS views
+ *   7. Multiple CDS views can consume the same table function
+ * ====================================================================
+ */
+
+/*
+ * ====================================================================
+ * TABLE FUNCTION: ZPRAC_TF_SIMPLE
+ * ====================================================================
+ */
+@EndUserText.label: 'Practice TF - Simple table function'
+define table function ZPRAC_TF_SIMPLE
+returns
+{
+  /*
+   * Return structure must include Client if used in client-dependent context.
+   * Data types use ABAP dictionary types (abap.clnt, /dmo/travel_id, etc.)
+   */
+  Client    : abap.clnt;
+  Travel_ID : /dmo/travel_id;
+}
+
+/* Delegate to AMDP class method */
+implemented by method
+  ZCL_TF_SIMPLE=>get_travel_id;
+
+/*
+ * ====================================================================
+ * AMDP CLASS: ZCL_TF_SIMPLE
+ * ====================================================================
+ */
+CLASS zcl_tf_simple DEFINITION PUBLIC.
+
+  PUBLIC SECTION.
+    INTERFACES: if_amdp_marker_hdb.                      " Mandatory marker interface
+    CLASS-METHODS: get_travel_id FOR TABLE FUNCTION ZPRAC_TF_SIMPLE.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_tf_simple IMPLEMENTATION.
+
+  /*
+   * BY DATABASE FUNCTION FOR HDB LANGUAGE SQLSCRIPT
+   *   → Declares this as a HANA database function
+   * USING zprac_cds_simple
+   *   → Declares which CDS views/tables the SQLScript code can access
+   */
+  METHOD get_travel_id
+    BY DATABASE FUNCTION FOR HDB LANGUAGE SQLSCRIPT
+    OPTIONS READ-ONLY
+    USING zprac_cds_simple.
+
+    RETURN SELECT Client_Name AS Client,   -- HANA returns client as Client_Name
+                  TravelId     AS Travel_ID
+           FROM zprac_cds_simple;
+
+  ENDMETHOD.
+
+ENDCLASS.
+
+/*
+ * ====================================================================
+ * CDS VIEW CONSUMING THE TABLE FUNCTION
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_TFSIM'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Table Function (simple)'
+define view ZPRAC_CDS_TF_SIMPLE
+  as select from ZPRAC_TF_SIMPLE
+{
+  Travel_ID
+}

@@ -1,0 +1,67 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_ODATA_DRAFT
+ * SQL VIEW: ZPRAC_SQL_ODRAF
+ * PURPOSE : CDS View with OData draft enablement for transactional UIs
+ * TOPIC   : @OData.draft — transactional Fiori UIs with draft handling
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. @OData.draft.enabled: true enables draft handling for the entity
+ *   2. Draft allows users to save incomplete changes before publishing
+ *   3. Requirements for draft-enabled CDS views:
+ *      ✓ @ObjectModel.writeDraft: true (or @ObjectModel.writeDraft
+ *        pointing to a separate draft-enabled view)
+ *      ✓ @OData.draft.enabled: true
+ *      ✓ @ObjectModel.compositionRoot: true
+ *      ✓ @ObjectModel.createEnabled, .updateEnabled, .deleteEnabled: true
+ *   4. Draft views work with RAP (ABAP RESTful Application Programming Model)
+ *   5. The draft key fields (DraftUUID, DraftAdministrativeData) are
+ *      automatically added by the framework
+ *   6. Draft views CANNOT be consumed without RAP BO behavior definition
+ *      — this annotation is the STARTING point
+ *
+ * DRAFT LIFECYCLE:
+ *   Create Draft → Save Draft → Activate → Delete Draft
+ *   The framework manages IsActiveEntity, DraftUUID, etc. automatically.
+ *
+ * NOTE:
+ *   This view demonstrates the annotations only. A full draft scenario
+ *   also requires RAP behavior definition (BDEF), service definition,
+ *   and service binding — beyond the scope of this CDS reference.
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_ODRAF'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - OData Draft enabled (RAP transactional)'
+@VDM.viewType: #BASIC
+@ObjectModel.compositionRoot: true
+@ObjectModel.writeDraft: true
+@ObjectModel.createEnabled: true
+@ObjectModel.updateEnabled: true
+@ObjectModel.deleteEnabled: true
+@OData.draft.enabled: true
+@OData.publish: true
+@OData.entitySet.name: 'TravelDraft'
+define view ZPRAC_CDS_ODATA_DRAFT
+  as select from /dmo/travel
+{
+  @Environment.systemField: #CLIENT
+  key client            as Client,
+  key travel_id         as TravelId,
+      agency_id         as AgencyId,
+      customer_id       as CustomerId,
+      @Semantics.date: true
+      begin_date        as BeginDate,
+      @Semantics.date: true
+      end_date          as EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      booking_fee       as BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      total_price       as TotalPrice,
+      currency_code     as CurrencyCode,
+      description       as Description,
+      status            as Status
+}

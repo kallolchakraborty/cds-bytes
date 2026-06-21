@@ -1,0 +1,70 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_VDM_CONSUME
+ * SQL VIEW: ZPRAC_SQL_VDMCON
+ * PURPOSE : VDM Consumption View — final layer for Fiori / Analytics
+ * TOPIC   : VDM layering — #CONSUMPTION view type
+ * ====================================================================
+ *
+ * VDM LAYER HIERARCHY:
+ *
+ *   ┌──────────────────────────────────────────────────┐
+ *   │  CONSUMPTION (#CONSUMPTION)                      │
+ *   │  C_* naming, @OData.publish: true                │
+ *   │  Used by: Fiori Apps, Analytical Queries, OData  │
+ *   ├──────────────────────────────────────────────────┤
+ *   │  COMPOSITE (#COMPOSITE)                          │
+ *   │  Business logic, calculations, associations      │
+ *   ├──────────────────────────────────────────────────┤
+ *   │  BASIC / INTERFACE (#BASIC)                      │
+ *   │  Direct table projection, full field semantics   │
+ *   ├──────────────────────────────────────────────────┤
+ *   │  DATABASE TABLES                                 │
+ *   └──────────────────────────────────────────────────┘
+ *
+ * CONSUMPTION VIEW CHARACTERISTICS:
+ *   ✓ Built on COMPOSITE or BASIC views (not directly on tables)
+ *   ✓ @VDM.viewType: #CONSUMPTION
+ *   ✓ @Analytics.dataCategory: #CUBE (facts) or #DIMENSION (master data)
+ *   ✓ @OData.publish: true (expose as OData service)
+ *   ✓ Minimal/no additional logic — just field selection + semantic annotations
+ *   ✓ Named with C_ prefix in SAP standard (e.g. C_Travel_TP)
+ *   ✓ Full @Semantics annotations required for OData/Analytics consumption
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_VDMCON'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - VDM Consumption View (C_* pattern)'
+@VDM.viewType: #CONSUMPTION
+@Analytics.dataCategory: #CUBE
+@ObjectModel.dataType: #CUBE
+@OData.publish: true
+@OData.entitySet.name: 'TravelAnalytics'
+define view ZPRAC_CDS_VDM_CONSUME
+  as select from ZPRAC_CDS_VDM_BASIC
+{
+  key TravelId,
+      AgencyId,
+      CustomerId,
+      @Semantics.date: true
+      BeginDate,
+      @Semantics.date: true
+      EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      TotalPrice,
+      CurrencyCode,
+      Description,
+      Status,
+      @Semantics.user.createdBy: true
+      Createdby,
+      @Semantics.date: true
+      Createdat,
+      @Semantics.user.lastChangedBy: true
+      Lastchangedby,
+      @Semantics.date: true
+      Lastchangedat
+}

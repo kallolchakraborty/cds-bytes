@@ -1,0 +1,69 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_VIEW_EXT
+ * SQL VIEW: ZPRAC_SQL_VEXT
+ * PURPOSE : View Extension — extending fields of an existing CDS view
+ * TOPIC   : @AbapCatalog.viewExtension — additive extension
+ * ====================================================================
+ *
+ * WHAT IS A VIEW EXTENSION?
+ *   Different from Metadata Extension (@Metadata.allowExtensions):
+ *   A View Extension adds NEW FIELDS to an existing CDS view entity.
+ *
+ * COMPARISON:
+ *   ┌──────────────────────┬──────────────────────┬────────────────────────┐
+ *   │ Feature              │ Metadata Extension   │ View Extension         │
+ *   ├──────────────────────┼──────────────────────┼────────────────────────┤
+ *   │ File type            │ .asr                 │ .asr                   │
+ *   │ Annotation           │ @Metadata.allowExt   │ @AbapCatalog.viewExt   │
+ *   │ Adds UI annotations  │ Yes                  │ No                     │
+ *   │ Adds new fields      │ No                   │ Yes                    │
+ *   │ Used by              │ CUSTOMER/PARTNER     │ CUSTOMER/PARTNER       │
+ *   │ Multiple extensions  │ Yes (stacked)        │ Yes (stacked)          │
+ *   └──────────────────────┴──────────────────────┴────────────────────────┘
+ *
+ * SYNTAX:
+ *   @AbapCatalog.viewExtension: true
+ *   define view ZPRAC_CDS_VIEW_EXT
+ *     as extend view ZPRAC_CDS_SIMPLE with { ... };
+ *
+ * KEY RULES:
+ *   1. The extension view must be activated after the base view
+ *   2. Extensions can add new fields or provide default values
+ *   3. The base view does not need to know about the extension
+ *   4. Only one level of extension is allowed (no chain extensions)
+ *   5. Extensions are additive — cannot modify/remove existing fields
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_VEXT'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - View Extension (extending ZPRAC_CDS_SIMPLE)'
+@AbapCatalog.viewExtension: true
+/*
+ * Extends ZPRAC_CDS_SIMPLE with additional computed fields.
+ * These fields become part of ZPRAC_CDS_SIMPLE after activation.
+ * Consumers of ZPRAC_CDS_SIMPLE automatically see the new fields.
+ */
+define view ZPRAC_CDS_VIEW_EXT
+  as extend view ZPRAC_CDS_SIMPLE
+    with
+{
+  /*
+   * New computed fields added to the existing view.
+   * These use the same source table (/dmo/travel) as the base view.
+   */
+  @Semantics.amount.currencyCode: 'CurrencyCode'
+      total_price - booking_fee as NetPriceCalc,
+
+      @Semantics.date: true
+      dats_add_days(end_date, 30)      as ExpectedFollowUp,
+
+      case
+        when status = 'B' then 'Accepted'
+        when status = 'N' then 'New'
+        when status = 'C' then 'Completed'
+        else 'Unknown'
+      end                              as StatusExtended
+}

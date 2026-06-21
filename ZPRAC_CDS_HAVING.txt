@@ -1,0 +1,48 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_HAVING
+ * SQL VIEW: ZPRAC_SQL_HAVING
+ * PURPOSE : Filter aggregated results using HAVING clause
+ * TOPIC   : HAVING — filtering AFTER GROUP BY aggregation
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. HAVING filters after GROUP BY — WHERE filters before GROUP BY
+ *   2. HAVING can reference aggregated fields (SUM, COUNT, etc.)
+ *   3. WHERE cannot reference aggregated fields — use HAVING instead
+ *   4. HAVING conditions can include AND/OR just like WHERE
+ *
+ * EXECUTION ORDER (conceptual):
+ *   FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY
+ *
+ * USE CASE:
+ *   Find customers who are high-value: total spend > 1000 AND
+ *   at least 3 bookings. Only interested in customers with
+ *   more than 1 distinct airline (they fly different carriers).
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_HAVING'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - HAVING clause on aggregated results'
+define view ZPRAC_CDS_HAVING
+  as select from ZPRAC_CDS_GROUP_BY
+{
+  key CustomerID,
+      BookingCount,
+      DistinctAirlines,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      TotalSpent,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      AvgFlightPrice,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      MinFlightPrice,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      MaxFlightPrice,
+      CurrencyCode
+}
+having
+      TotalSpent > 1000
+  and BookingCount >= 3
+  and DistinctAirlines > 1

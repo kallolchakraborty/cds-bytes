@@ -1,0 +1,156 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_TF_DUMMY
+ * SQL VIEW: ZPRAC_SQL_TFDUM
+ * PURPOSE : Advanced Table Function — DUMMY table, IF/ELSE, variables
+ * TOPIC   : Procedural logic in Table Functions
+ *
+ * TABLE FUNCTION: ZPRAC_TF_DUMMY
+ * CLASS:          ZCL_TF_DUMMY
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. DUMMY table: HANA system table with exactly 1 row, used for
+ *      fetching system values (CURRENT_DATE, USER(), etc.) into vars
+ *   2. Local variables: DECLARE var_name type; inside SQLScript
+ *   3. IF/ELSE logic is possible inside the AMDP method (NOT in pure CDS)
+ *   4. INTO clause stores single-row SELECT results into variables
+ *   5. CASE can also be used inside SQLScript (not just CDS)
+ *   6. Date formatting with TO_DATE / TO_CHAR in HANA SQLScript
+ * ====================================================================
+ */
+
+/*
+ * ====================================================================
+ * TABLE FUNCTION: ZPRAC_TF_DUMMY
+ * ====================================================================
+ */
+@EndUserText.label: 'Practice TF - DUMMY table, IF/ELSE, CASE, local vars'
+define table function ZPRAC_TF_DUMMY
+  with parameters
+    p1_travel_id   : /dmo/travel_id,
+    p2_customer_id : /dmo/customer_id
+returns
+{
+  Client      : abap.clnt;
+  Travel_ID   : /dmo/travel_id;
+  Booking_Fee : /dmo/booking_fee;
+  Total_Price : /dmo/total_price;
+  CurrentUser : abap.string;
+  CurrentDate : abap.string;
+  Status      : abap.string;
+}
+implemented by method
+  ZCL_TF_DUMMY=>get_details;
+
+/*
+ * ====================================================================
+ * AMDP CLASS: ZCL_TF_DUMMY
+ * ====================================================================
+ */
+CLASS zcl_tf_dummy DEFINITION PUBLIC.
+
+  PUBLIC SECTION.
+    INTERFACES: if_amdp_marker_hdb.     " Mandatory
+    CLASS-METHODS: get_details FOR TABLE FUNCTION zprac_tf_dummy.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_tf_dummy IMPLEMENTATION.
+
+  METHOD get_details
+    BY DATABASE FUNCTION FOR HDB LANGUAGE SQLSCRIPT
+    OPTIONS READ-ONLY
+    USING zprac_cds_simple.
+
+    /* ── Local Variable Declaration ── */
+    declare lv_user         string;
+    declare lv_date_today   string;
+
+    /*
+     * ── Fetch system values via DUMMY table ──
+     * The DUMMY table always has exactly one row.
+     * We use it to get system functions into local variables.
+     */
+    select user()               as curr_user,
+           to_date(current_date, 'YYYY-MM-DD') as curr_date
+      into lv_user, lv_date_today
+      from dummy;
+
+    /*
+     * ── Procedural IF/ELSE Logic ──
+     * Different result sets based on user context.
+     * This is NOT possible in a pure CDS view — only in Table Functions.
+     */
+    if :lv_user = 'SAPABAP' then
+
+      return select Client_Name as Client,
+                    TravelId    as Travel_ID,
+                    BookingFee  as Booking_Fee,
+                    TotalPrice  as Total_Price,
+                    :lv_user         as CurrentUser,
+                    :lv_date_today   as CurrentDate,
+                    /*
+                     * CASE with ELSE clause (complete) inside SQLScript
+                     */
+                    case
+                      when status = 'B' then 'Accepted'
+                      when status = 'N' then 'New'
+                      when status = 'C' then 'Completed'
+                      when status = 'X' then 'Cancelled'
+                      else 'Unknown'
+                    end               as Status
+              from zprac_cds_simple
+              where TravelId   = :p1_travel_id
+                and CustomerId = :p2_customer_id;
+
+    else
+
+      /* Fallback: different data for non-admin users */
+      return select Client_Name as Client,
+                    TravelId    as Travel_ID,
+                    BookingFee  as Booking_Fee,
+                    TotalPrice  as Total_Price,
+                    :lv_user         as CurrentUser,
+                    :lv_date_today   as CurrentDate,
+                    'RESTRICTED'     as Status
+              from zprac_cds_simple
+              where TravelId   = :p1_travel_id
+                and CustomerId = :p2_customer_id;
+
+    end if;
+
+  endmethod.
+
+ENDCLASS.
+
+/*
+ * ====================================================================
+ * CDS VIEW CONSUMING — WITH CURRENCY CAST + USER/DATE FIELDS
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_TFDUM'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - TF with DUMMY, IF/ELSE, CASE, local vars'
+define view ZPRAC_CDS_TF_DUMMY
+  as select from ZPRAC_TF_DUMMY( p1_travel_id: '00000009', p2_customer_id: '000115' )
+{
+  Travel_ID,
+
+  cast('CURR' as /dmo/currency_code) as CurrencyCode,
+
+  @Semantics.amount.currencyCode: 'CurrencyCode'
+  cast(Booking_Fee as /dmo/booking_fee) as BookingFeeDisplay,
+
+  @Semantics.amount.currencyCode: 'CurrencyCode'
+  cast(Total_Price as /dmo/total_price) as TotalPriceDisplay,
+
+  @Semantics.user.createdBy: true
+  CurrentUser,
+  @Semantics.date: true
+  CurrentDate,
+  Status
+}

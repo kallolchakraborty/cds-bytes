@@ -1,0 +1,77 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_LEFT_JOIN
+ * SQL VIEW: ZPRAC_SQL_LEFT_JN
+ * PURPOSE : LEFT OUTER JOIN between Travel and Booking
+ * TOPIC   : Outer Joins — preserving non-matching rows from one side
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. LEFT OUTER JOIN returns ALL rows from the left table, even
+ *      when there is no match in the right table (right-side fields = NULL)
+ *   2. RIGHT OUTER JOIN returns ALL rows from the right table (mirror)
+ *   3. Use LEFT JOIN when: "Give me all travels AND their bookings if any"
+ *   4. Use INNER JOIN when: "Give me only travels that HAVE bookings"
+ *   5. NULLs from the non-matching side require COALESCE for safe display
+ *
+ * REAL-WORLD USE CASE:
+ *   Travels with optional bookings — some travels have no bookings yet.
+ *   A LEFT JOIN shows all travels; an INNER JOIN would HIDE unbooked travels.
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_LEFT_JN'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - LEFT OUTER JOIN Travel → Booking'
+define view ZPRAC_CDS_LEFT_JOIN
+  as select from /DMO/I_Travel_D as _Travel
+
+    /*
+     * LEFT OUTER JOIN:
+     *   All travels are returned.
+     *   If a travel has no bookings, BookingUUID and other _Booking fields
+     *   will be NULL. Use COALESCE to provide defaults.
+     */
+    left outer join /DMO/I_Booking_D as _Booking
+      on _Travel.TravelUUID = _Booking.TravelUUID
+
+{
+  /* Keys from left table (always present) */
+  key _Travel.TravelUUID,
+  key _Travel.TravelID,
+
+  /* Travel fields */
+      _Travel.AgencyID,
+      _Travel.CustomerID,
+      @Semantics.date: true
+      _Travel.BeginDate,
+      @Semantics.date: true
+      _Travel.EndDate,
+      @Semantics.amount.currencyCode: 'TravelCurrency'
+      _Travel.TotalPrice,
+      @Semantics.amount.currencyCode: 'TravelCurrency'
+      _Travel.BookingFee,
+      _Travel.CurrencyCode as TravelCurrency,
+      _Travel.Description,
+      _Travel.Status as TravelStatus,
+
+  /* Booking fields (may be NULL if no booking exists) */
+      coalesce(_Booking.BookingID, 0)         as BookingID,
+      @Semantics.date: true
+      _Booking.BookingDate,
+      _Booking.BookingStatus,
+      @Semantics.date: true
+      _Booking.FlightDate,
+      @Semantics.amount.currencyCode: 'BookingCurrency'
+      _Booking.FlightPrice,
+      _Booking.CurrencyCode as BookingCurrency,
+      _Booking.AirlineID,
+      _Booking.ConnectionID,
+
+  /* Indicator showing if a booking exists */
+      case when _Booking.BookingUUID is not null
+           then 'Has Booking'
+           else 'No Booking'
+      end as BookingExistsIndicator
+}

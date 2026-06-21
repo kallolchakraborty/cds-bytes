@@ -1,0 +1,61 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_EXTENSIBILITY
+ * SQL VIEW: ZPRAC_SQL_EXT
+ * PURPOSE : Extensible CDS view — key user field extensibility
+ * TOPIC   : @Extensible: true — enabling customer field extensions
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. @Extensible: true allows customers to add custom fields to
+ *      an existing CDS view via the Key User Extensibility framework
+ *   2. @Extensible: true is set on the BASE CDS view (interface view)
+ *   3. Customer fields are added via APPEND structures on the DDIC
+ *      structure (the SQL view name), NOT directly on the CDS view
+ *   4. The CDS view automatically picks up appended fields at runtime
+ *   5. Prerequisites for extensibility:
+ *      ✓ @AbapCatalog.sqlViewName must exist as a SE11 structure
+ *      ✓ The structure must be extensible (delivery class E)
+ *      ✓ @Extensible: true on the CDS view
+ *   6. Key user extensibility is ONLY available for #BASIC view types
+ *   7. NOT for #COMPOSITE, #CONSUMPTION, or #PRIVATE views
+ *
+ * EXTENSIBILITY FLOW:
+ *   Customer defines APPEND on ZPRAC_SQL_EXT (SE11)
+ *   → The append fields are automatically available in the CDS view
+ *   → Fiori / OData automatically exposes them
+ *
+ * CUSTOMER APPEND EXAMPLE:
+ *   TYPES: BEGIN OF ZPRAC_SQL_EXT.
+ *     INCLUDE TYPE: ZAPPEND_TRAVEL_EXT.    " Customer fields
+ *   TYPES: END OF ZPRAC_SQL_EXT.
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_EXT'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Extensible view (@Extensible: true)'
+@VDM.viewType: #BASIC
+@Analytics.dataCategory: #DIMENSION
+@Extensible: true
+define view ZPRAC_CDS_EXTENSIBILITY
+  as select from /dmo/travel
+{
+  @Environment.systemField: #CLIENT
+  key client            as Client,
+  key travel_id         as TravelId,
+      agency_id         as AgencyId,
+      customer_id       as CustomerId,
+      @Semantics.date: true
+      begin_date        as BeginDate,
+      @Semantics.date: true
+      end_date          as EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      booking_fee       as BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      total_price       as TotalPrice,
+      currency_code     as CurrencyCode,
+      description       as Description,
+      status            as Status
+}

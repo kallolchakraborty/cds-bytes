@@ -1,0 +1,76 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_CURR_CONV
+ * SQL VIEW: ZPRAC_SQL_CURCNV
+ * PURPOSE : Currency conversion and decimal shift in CDS
+ * TOPIC   : CURRENCY_CONVERSION, DECIMAL_SHIFT — monetary calculations
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. CURRENCY_CONVERSION converts amounts between currencies using
+ *      exchange rate table TCURR (or custom)
+ *   2. DECIMAL_SHIFT adjusts decimal places based on currency (e.g. JPY has 0 decimals)
+ *   3. Both require @Semantics.amount.currencyCode annotation on the result
+ *   4. Key parameters for CURRENCY_CONVERSION:
+ *      ┌───────────────────┬──────────────────────────────────────┐
+ *      │ Parameter         │ Description                          │
+ *      ├───────────────────┼──────────────────────────────────────┤
+ *      │ amount            │ Source amount to convert             │
+ *      │ source_currency   │ Original currency code               │
+ *      │ target_currency   │ Desired currency code                │
+ *      │ exchange_rate_date│ Date for rate lookup                 │
+ *      │ round             │ 'X' = round, ' ' = truncate          │
+ *      │ decimal_shift     │ 'X' = auto-shift, ' ' = no shift     │
+ *      │ decimal_shift_round│ Round after shift ('X' / ' ')       │
+ *      │ error_handling    │ 'FAIL' / 'SET_TO_NULL' / 'KEEP'     │
+ *      └───────────────────┴──────────────────────────────────────┘
+ *
+ * REQUIREMENTS:
+ *   - Exchange rates must exist in TCURR (or custom rate table)
+ *   - Currency must have configuration in TCUR* tables
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_CURCNV'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Currency conversion and decimal shift'
+define view ZPRAC_CDS_CURR_CONV
+  as select from /dmo/travel
+{
+  key travel_id     as TravelId,
+      currency_code as CurrencyCode,
+      @Semantics.date: true
+      begin_date    as BeginDate,
+      @Semantics.date: true
+      end_date      as EndDate,
+
+  @Semantics.amount.currencyCode: 'CurrencyCode'
+  total_price       as TotalPriceDisplay,
+
+  @Semantics.amount.currencyCode: 'TargetCurrency'
+  currency_conversion(
+    amount            => total_price,
+    source_currency   => currency_code,
+    target_currency   => 'EUR',
+    exchange_rate_date => begin_date,
+    round             => 'X',
+    decimal_shift     => 'X',
+    decimal_shift_round => 'X',
+    error_handling    => 'SET_TO_NULL'
+  ) as TotalInEUR,
+
+  'EUR' as TargetCurrency,
+
+  @Semantics.amount.currencyCode: 'CurrencyCode'
+  decimal_shift(
+    amount   => booking_fee,
+    currency => currency_code
+  ) as BookingFeeShifted,
+
+  @Semantics.amount.currencyCode: 'TargetCurrency'
+  decimal_shift(
+    amount   => total_price,
+    currency => 'EUR'
+  ) as TotalPriceEURShifted
+}

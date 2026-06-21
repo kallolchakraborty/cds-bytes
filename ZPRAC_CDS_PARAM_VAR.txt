@@ -1,0 +1,52 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_PARAM_VAR
+ * SQL VIEW: ZPRAC_SQL_PAR_VAR
+ * PURPOSE : Forwarding ABAP parameters to another parameterized CDS view
+ * TOPIC   : $parameters variable — passing input params downstream
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. $parameters.<param_name> → References the current view's input params
+ *   2. Used to forward parameters to the underlying CDS view/tf
+ *   3. The downstream view's parameter types must match
+ *   4. This creates a transparent parameter chain: ABAP → View A → View B
+ *   5. @Semantics annotations must be maintained at each layer
+ *
+ * FLOW:
+ *   ABAP Report → ZPRAC_CDS_PARAM_VAR(p1: 'X', p2: 'Y')
+ *                       ↓
+ *              ZPRAC_CDS_PARAM(p1_travel_id: 'X', p2_agency_id: 'Y')
+ *                       ↓
+ *                     /dmo/travel (database table)
+ *
+ * KEYWORD SYNTAX:
+ *   Parameter mapping uses NAMED notation:
+ *     downstream_view( param1: $parameters.my_param1, ... )
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_PAR_VAR'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Forwarding parameters via $parameters'
+define view ZPRAC_CDS_PARAM_VAR
+  with parameters
+    p1 : /dmo/travel_id,   -- Will be forwarded to ZPRAC_CDS_PARAM
+    p2 : /dmo/agency_id    -- Will be forwarded to ZPRAC_CDS_PARAM
+  as select from ZPRAC_CDS_PARAM( p1_travel_id: $parameters.p1, p2_agency_id: $parameters.p2 )
+{
+  key TravelId,
+      AgencyId,
+      CustomerId,
+      @Semantics.date: true
+      BeginDate,
+      @Semantics.date: true
+      EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      TotalPrice,
+      CurrencyCode,
+      Description
+}

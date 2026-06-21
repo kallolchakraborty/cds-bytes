@@ -1,0 +1,79 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_CAST
+ * SQL VIEW: ZPRAC_SQL_CAST
+ * PURPOSE : Comprehensive type casting examples
+ * TOPIC   : CAST — converting between ABAP data types in CDS
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. CAST converts a value from one data type to another
+ *   2. Syntax: CAST( source_value AS target_type )
+ *   3. Target types use the abap. namespace:
+ *      ┌─────────────────┬────────────────────────────────┐
+ *      │ Target Type     │ Description                    │
+ *      ├─────────────────┼────────────────────────────────┤
+ *      │ abap.dats       │ Date (YYYYMMDD)                │
+ *      │ abap.tims       │ Time (HHMMSS)                  │
+ *      │ abap.tstmp      │ Timestamp (YYYYMMDDHHMMSS)     │
+ *      │ abap.char(n)    │ Character string of length n   │
+ *      │ abap.numc(n)    │ Numeric text of length n       │
+ *      │ abap.int2       │ 2-byte integer (INT2)          │
+ *      │ abap.int4       │ 4-byte integer (INT4)          │
+ *      │ abap.int8       │ 8-byte integer (INT8)          │
+ *      │ abap.fltp       │ Floating point (FLTP)          │
+ *      │ abap.dec(n,m)   │ Packed decimal with n digits, m decimals │
+ *      │ abap.string(n)  │ Variable-length string          │
+ *      └─────────────────┴────────────────────────────────┘
+ *   4. CAST on amounts should always be followed by
+ *      @Semantics.amount.currencyCode annotation
+ *   5. Not all type conversions are valid — incompatible types raise error
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_CAST'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - CAST type conversions'
+define view ZPRAC_CDS_CAST
+  as select from /dmo/travel
+{
+  key travel_id     as TravelId,
+      currency_code as CurrencyCode,
+
+  /* ── Numeric CASTs (monetary values with currency semantics) ── */
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      cast(total_price as abap.fltp)            as PriceFltp,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      cast(total_price as abap.dec(10, 2))      as PriceDec,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      cast(booking_fee as abap.int4)            as FeeInt,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      cast(total_price as abap.int8)            as PriceInt8,
+
+  /* ── String CASTs ── */
+      cast(travel_id as abap.char(15))          as TravelIdChar,
+      cast(travel_id as abap.numc(15))          as TravelIdNumc,
+      cast(description as abap.string(50))      as DescString50,
+      cast(status as abap.char(2))              as StatusFixed,
+
+  /* ── Date/Time CASTs ── */
+      @Semantics.date: true
+      cast(begin_date as abap.dats)             as BeginDateDats,
+      @Semantics.date: true
+      cast(end_date as abap.dats)               as EndDateDats,
+
+  /* ── Literal CASTs ── */
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      cast('199.50' as abap.dec(10, 2))         as HardcodedFee,
+
+      cast(concat(travel_id, ' - ', description)
+           as abap.string(100))                as TravelDescription,
+
+  /* ── Field-level transformations with CAST ── */
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      cast(
+        division(total_price, 2, 2)
+        as abap.dec(10, 2)
+      )                                         as HalfPriceDec
+}

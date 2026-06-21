@@ -1,0 +1,79 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_SEARCH
+ * SQL VIEW: ZPRAC_SQL_SEARCH
+ * PURPOSE : Full-text search with @Search annotations
+ * TOPIC   : @Search.searchable — enabling Fiori search capabilities
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. @Search.searchable enables full-text search on a CDS view
+ *   2. Fields annotated with @Search.defaultSearchElement are included
+ *      in the global search
+ *   3. @Search.fuzzinessThreshold controls fuzzy matching (0.0 - 1.0)
+ *   4. @Search.ranking defines search result ranking (TITLE / SUMMARY / LOW)
+ *   5. Search is case-insensitive by default
+ *   6. The Fiori search bar uses these annotations automatically
+ *
+ * SEARCH ANNOTATION REFERENCE:
+ *   ┌──────────────────────────────┬────────────────────────────────┐
+ *   │ Annotation                   │ Description                    │
+ *   ├──────────────────────────────┼────────────────────────────────┤
+ *   │ @Search.searchable           │ Enable search for the view     │
+ *   │ @Search.defaultSearchElement  │ Include in global search       │
+ *   │ @Search.fuzzinessThreshold   │ 0.0 (exact) to 1.0 (very fuzzy)│
+ *   │ @Search.ranking: #TITLE      │ Highest relevance               │
+ *   │ @Search.ranking: #SUMMARY    │ Medium relevance                │
+ *   │ @Search.ranking: #LOW        │ Low relevance                   │
+ *   └──────────────────────────────┴────────────────────────────────┘
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_SEARCH'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Full-text search with @Search.searchable'
+@Search.searchable: true
+define view ZPRAC_CDS_SEARCH
+  as select from /dmo/travel
+{
+  @Environment.systemField: #CLIENT
+  key client            as Client,
+  key travel_id         as TravelId,
+      /*
+       * AgencyID is included in search but has lower ranking
+       */
+      @Search.defaultSearchElement: true
+      @Search.fuzzinessThreshold: 0.7
+      @Search.ranking: #SUMMARY
+      agency_id         as AgencyId,
+
+      /*
+       * CustomerID is searchable with medium relevance
+       */
+      @Search.defaultSearchElement: true
+      @Search.fuzzinessThreshold: 0.8
+      @Search.ranking: #SUMMARY
+      customer_id       as CustomerId,
+
+      @Semantics.date: true
+      begin_date        as BeginDate,
+      @Semantics.date: true
+      end_date          as EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      booking_fee       as BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      total_price       as TotalPrice,
+      currency_code     as CurrencyCode,
+
+      /*
+       * Description is a TITLE-ranking field — shows prominently
+       * in search results with fuzzy matching
+       */
+      @Search.defaultSearchElement: true
+      @Search.fuzzinessThreshold: 0.9
+      @Search.ranking: #TITLE
+      description       as Description,
+
+      status            as Status
+}

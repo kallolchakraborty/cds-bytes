@@ -1,0 +1,61 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_SIMPLE
+ * SQL VIEW: ZPRAC_SQL_SIMPLE
+ * PURPOSE : Simple CDS View — Basic SELECT from a database table
+ * TOPIC   : Foundation — all CDS views build on this pattern
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. @AbapCatalog.sqlViewName   → Technical SQL view name visible in SE11
+ *   2. @AbapCatalog.compiler.compareFilter → Optimizes WHERE clause filtering
+ *   3. @AbapCatalog.preserveKey   → Preserves key fields as defined
+ *   4. @AccessControl.authorizationCheck → #CHECK / #NOT_REQUIRED / #NOT_ALLOWED
+ *   5. @EndUserText.label         → Description text (SE11, ADT)
+ *   6. @Environment.systemField:#CLIENT → Client field mapping for implicit WHERE
+ *   7. @Semantics annotations     → Define semantic meaning for fields
+ *   8. define view { entity_name } → CDS entity name used in ABAP/openSQL
+ *
+ * USAGE IN ABAP:
+ *   SELECT * FROM ZPRAC_CDS_SIMPLE
+ *     INTO TABLE @DATA(lt_travel).
+ *
+ *   SELECT TravelId, AgencyId, TotalPrice
+ *     FROM ZPRAC_CDS_SIMPLE
+ *     INTO TABLE @DATA(lt_travel_short)
+ *     WHERE CustomerId = '000115'.
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_SIMPLE'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Simple SELECT from /dmo/travel'
+define view ZPRAC_CDS_SIMPLE
+  as select from /dmo/travel
+{
+  @Environment.systemField: #CLIENT
+  key client            as Client,
+  key travel_id         as TravelId,
+      agency_id         as AgencyId,
+      customer_id       as CustomerId,
+      @Semantics.date: true
+      begin_date        as BeginDate,
+      @Semantics.date: true
+      end_date          as EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      booking_fee       as BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      total_price       as TotalPrice,
+      currency_code     as CurrencyCode,
+      description       as Description,
+      status            as Status,
+      @Semantics.user.createdBy: true
+      createdby         as Createdby,
+      @Semantics.date: true
+      createdat         as Createdat,
+      @Semantics.user.lastChangedBy: true
+      lastchangedby     as Lastchangedby,
+      @Semantics.date: true
+      lastchangedat     as Lastchangedat
+}

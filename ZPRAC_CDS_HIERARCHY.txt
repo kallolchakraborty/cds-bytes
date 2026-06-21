@@ -1,0 +1,70 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_HIERARCHY
+ * SQL VIEW: ZPRAC_SQL_HIER
+ * PURPOSE : CDS Hierarchy — parent-child tree structure
+ * TOPIC   : @Hierarchy annotations for tree-like data (org structure)
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. Hierarchies define parent-child relationships for tree structures
+ *   2. Used in Analytical Queries for drill-down / roll-up
+ *   3. Key attributes:
+ *      ┌────────────────────┬──────────────────────────────────────┐
+ *      │ Attribute          │ Description                          │
+ *      ├────────────────────┼──────────────────────────────────────┤
+ *      │ @Hierarchy.level   │ Node level (root = 1)                │
+ *      │ ParentChild        │ Association to parent node            │
+ *      │ PARENT             │ Parent field in the source table      │
+ *      │ ORPHANS            │ How to handle broken links            │
+ *      │ MULTIPLE_PARENTS   │ Allow multiple parents?               │
+ *      │ SIBLING_ORDER      │ Order among siblings                  │
+ *      │ CARDINALITY        │ Node cardinality                      │
+ *      └────────────────────┴──────────────────────────────────────┘
+ *   4. Requires: entity with ParentChild association
+ *   5. The source table needs: NodeID, ParentID, and a hirearchy
+ *      association pointing to itself
+ *
+ * NOTE:
+ *   This example uses a PRACTICE-ONLY pattern since /DMO/ doesn't have
+ *   hierarchy data. The agency table is used with a self-association
+ *   to demonstrate the concept. In production, use actual hierarchy
+ *   tables (like ORGUNIT, PROFIT_CTR, etc.)
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_HIER'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - HIERARCHY view (agency self-ref)'
+define view ZPRAC_CDS_HIERARCHY
+  as select from /dmo/agency as _Agency
+
+  /*
+   * ParentChild association: self-join to parent agency
+   * The source /dmo/agency doesn't have a parent_id field in standard,
+   * so this is a CONCEPTUAL example using agency_id = agency_id for
+   * demonstration. In real scenarios, use a table with ParentID.
+   */
+  association [0..1] to /dmo/agency as _Parent
+    on _Parent.agency_id = _Agency.agency_id
+
+{
+  @Environment.systemField: #CLIENT
+  key client            as Client,
+  key _Agency.agency_id as AgencyID,
+      _Agency.name      as AgencyName,
+      _Agency.street    as Street,
+      _Agency.city      as City,
+      _Agency.country_code as CountryCode,
+
+  /* Expose parent association for hierarchy traversal */
+      _Parent,
+
+  /*
+   * Hierarchy level: computed in a consuming analytical view.
+   * In real hierarchies, this is generated automatically when
+   * the hierarchy is resolved by the analytical engine.
+   */
+      'N/A'             as HierarchyLevel   -- Placeholder
+}

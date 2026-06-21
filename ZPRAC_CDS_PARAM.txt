@@ -1,0 +1,66 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_PARAM
+ * SQL VIEW: ZPRAC_SQL_PARAM
+ * PURPOSE : CDS View with input parameters — filter at query time
+ * TOPIC   : Parameterized CDS Views
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. Input parameters defined in WITH PARAMETERS block
+ *   2. Parameters typed using existing data elements (e.g. /dmo/travel_id)
+ *   3. Parameters referenced via :param_name in WHERE clause
+ *   4. No extra annotations needed — consumed in ABAP via explicit param passing
+ *   5. Parameters are mandatory by default (use DEFAULT to make optional)
+ *   6. @Semantics annotations are essential for downstream consumption
+ *      even on parameterized views (Fiori, Analytics, OData)
+ *
+ * USAGE IN ABAP:
+ *   SELECT * FROM ZPRAC_CDS_PARAM(
+ *              p1_travel_id = @p_travel,
+ *              p2_agency_id = @p_agency )
+ *     INTO TABLE @DATA(lt_travel).
+ *
+ *   DATA: p_travel TYPE /dmo/travel_id VALUE '00000009',
+ *         p_agency TYPE /dmo/agency_id VALUE '070032'.
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_PARAM'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Parameterized view with input params'
+define view ZPRAC_CDS_PARAM
+  with parameters
+    p1_travel_id : /dmo/travel_id,   -- Parameter 1: Travel ID filter
+    p2_agency_id : /dmo/agency_id    -- Parameter 2: Agency ID filter
+  as select from /dmo/travel
+{
+  @Environment.systemField: #CLIENT
+  key client            as Client,
+  key travel_id         as TravelId,
+      agency_id         as AgencyId,
+      customer_id       as CustomerId,
+      @Semantics.date: true
+      begin_date        as BeginDate,
+      @Semantics.date: true
+      end_date          as EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      booking_fee       as BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      total_price       as TotalPrice,
+      currency_code     as CurrencyCode,
+      description       as Description,
+      status            as Status,
+      @Semantics.user.createdBy: true
+      createdby         as Createdby,
+      @Semantics.date: true
+      createdat         as Createdat,
+      @Semantics.user.lastChangedBy: true
+      lastchangedby     as Lastchangedby,
+      @Semantics.date: true
+      lastchangedat     as Lastchangedat
+}
+where
+      travel_id = :p1_travel_id
+  and agency_id = :p2_agency_id

@@ -1,0 +1,78 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_ASSOCIATION
+ * SQL VIEW: ZPRAC_SQL_ASSOC
+ * PURPOSE : CDS Association — lazy/on-demand join relationship
+ * TOPIC   : Defining and exposing associations
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   1. Association is a DECLARED relationship — NOT executed as a join
+ *   2. Data is fetched lazily (on demand) when the association is accessed
+ *   3. Cardinality: [1] → exactly one, [0..1] → zero or one, [*] → many
+ *   4. To expose the association publicly, include it in the SELECT list
+ *   5. Consumption via path expression: _Assoc._Customer.FirstName
+ *   6. Associations can be accessed in WHERE clause - implicit join
+ *
+ * ASSOCIATION vs JOIN:
+ *   ┌─────────────┬──────────────────────┬───────────────────┐
+ *   │ Aspect      │ JOIN                 │ Association       │
+ *   ├─────────────┼──────────────────────┼───────────────────┤
+ *   │ Fetch       │ Eager (always runs)  │ Lazy (on-access)  │
+ *   │ SQL         │ Generated upfront    │ Dynamic SQL       │
+ *   │ Performance │ Good for small sets  │ Good for optional │
+ *   │ Reuse       │ Coupled              │ Decoupled         │
+ *   └─────────────┴──────────────────────┴───────────────────┘
+ *
+ * CONSUMPTION IN ABAP:
+ *   SELECT BookingUUID, _Customer.FirstName, _Customer.LastName
+ *     FROM ZPRAC_CDS_ASSOCIATION
+ *     INTO TABLE @DATA(lt_bookings).
+ *   --> The _Customer association is resolved automatically by the framework
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_ASSOC'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Association (lazy join) to Customer'
+define view ZPRAC_CDS_ASSOCIATION
+  as select from /DMO/I_Booking_D as _Booking
+
+  /*
+   * Association definition:
+   *   [1] = cardinality (exactly one Customer per Booking)
+   *   to /DMO/I_Customer = target CDS view
+   *   as _Customer = alias used for path expressions
+   *   on ... = condition linking source to target
+   *
+   * Default cardinality when not specified: [1]
+   */
+  association [1] to /DMO/I_Customer as _Customer
+    on _Booking.CustomerID = _Customer.CustomerID
+
+{
+  key _Booking.BookingUUID,
+      _Booking.TravelUUID,
+      _Booking.BookingID,
+      @Semantics.date: true
+      _Booking.BookingDate,
+      _Booking.CustomerID,
+      _Booking.AirlineID,
+      _Booking.ConnectionID,
+      @Semantics.date: true
+      _Booking.FlightDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      _Booking.FlightPrice,
+      _Booking.CurrencyCode,
+      _Booking.BookingStatus,
+      @Semantics.date: true
+      _Booking.LocalLastChangedAt,
+
+  /*
+   * Expose the association publicly so consumers can traverse it:
+   *   Include _Customer in the field list
+   *   Consumers can now write: _Customer.FirstName (path expression)
+   */
+      _Customer
+}

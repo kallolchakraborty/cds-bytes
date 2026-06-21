@@ -1,0 +1,80 @@
+/*
+ * ====================================================================
+ * CDS VIEW: ZPRAC_CDS_DATE_FUNC
+ * SQL VIEW: ZPRAC_SQL_DATE
+ * PURPOSE : Date and time manipulation in CDS
+ * TOPIC   : Date/time functions — DATS, TSTMP, and system timestamps
+ * ====================================================================
+ *
+ * KEY LEARNING POINTS:
+ *   Available date/time functions in ABAP CDS:
+ *
+ *   ┌────────────────────────┬────────────────────────────────────────┐
+ *   │ Function               │ Description                            │
+ *   ├────────────────────────┼────────────────────────────────────────┤
+ *   │ DATS_ADD_DAYS(d, n)    │ Add days to date                      │
+ *   │ DATS_ADD_MONTHS(d, n)  │ Add months to date                    │
+ *   │ DATS_DAYS_BETWEEN(d1,d2)│ Days between two dates                │
+ *   │ DATS_IS_VALID(d)       │ Check if date is valid (1=valid)       │
+ *   │ TSTMP_TO_DATS(t)       │ Timestamp → date                      │
+ *   │ TSTMP_TO_TIMS(t)       │ Timestamp → time                      │
+ *   │ ABAP_NOW( )            │ Current timestamp (TSTMP)              │
+ *   │ ABAP_CURRENT_DATE( )   │ Current date (DATS)                    │
+ *   │ ABAP_CURRENT_TIME( )   │ Current time (TIMS)                    │
+ *   │ TSTMP_SECONDS_BETWEEN  │ Seconds between two timestamps          │
+ *   └────────────────────────┴────────────────────────────────────────┘
+ *
+ * DATA TYPE REFERENCE:
+ *   abap.dats  → Date (YYYYMMDD), 8 chars
+ *   abap.tims  → Time (HHMMSS), 6 chars
+ *   abap.tstmp → Timestamp (YYYYMMDDHHMMSS), 14 chars (without dec.)
+ * ====================================================================
+ */
+@AbapCatalog.sqlViewName: 'ZPRAC_SQL_DATE'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Practice CDS - Date/time functions (DATS, TSTMP)'
+define view ZPRAC_CDS_DATE_FUNC
+  as select from /dmo/travel
+{
+  key travel_id         as TravelId,
+      @Semantics.date: true
+      begin_date        as BeginDate,
+      @Semantics.date: true
+      end_date          as EndDate,
+      @Semantics.date: true
+      createdat         as CreatedAt,
+
+  /* ── Date Arithmetic ── */
+      @Semantics.date: true
+      dats_add_days(begin_date, 30)                 as BeginPlus30,
+      @Semantics.date: true
+      dats_add_months(begin_date, 3)                as BeginPlus3Months,
+      @Semantics.date: true
+      dats_add_days(end_date, -7)                   as EndMinus7,
+
+  /* ── Date Difference ── */
+      dats_days_between(begin_date, end_date)       as TripDurationDays,
+
+  /* ── Date Validation ── */
+      dats_is_valid(begin_date)                     as IsBeginValid,
+      dats_is_valid(end_date)                       as IsEndValid,
+
+  /* ── Timestamp Conversion ── */
+      @Semantics.date: true
+      tstmp_to_dats(createdat)                     as CreatedDate,
+      tstmp_to_tims(createdat)                     as CreatedTime,
+
+  /* ── Current System Values ── */
+      @Semantics.date: true
+      abap_current_date( )                          as Today,
+      abap_current_time( )                          as NowTime,
+
+  /* ── Validation Logic ── */
+      case
+        when end_date < abap_current_date( ) then 'Past'
+        when end_date = abap_current_date( ) then 'Today'
+        else 'Future'
+      end                                           as TripTiming
+}
