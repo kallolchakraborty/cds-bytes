@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = join(__dirname, '..');
-const SRC_DIR = '/tmp/cds-bytes';
+const SRC_DIR = join(PROJECT_ROOT, 'sources');
 const CONTENT_DIR = join(PROJECT_ROOT, 'content');
 const JS_DIR = join(PROJECT_ROOT, 'js');
 
