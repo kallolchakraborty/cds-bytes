@@ -4,18 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>cds bytes — ABAP CDS Documentation & Study Materials</title>
-  <meta name="description" content="cds bytes is a modern, search-first documentation portal for ABAP Core Data Services (CDS) views, annotations, joins, associations, table functions, AMDP, and DCL.">
+  <meta name="description" content="cds bytes is a modern, search-first ABAP CDS portal with runnable examples and key learning points.">
   <meta name="keywords" content="ABAP, CDS, Core Data Services, SAP, documentation, study notes, cheat sheets">
   <meta name="author" content="Kallol Chakraborty">
   <meta property="og:title" content="cds bytes — ABAP CDS Documentation & Study Materials">
-  <meta property="og:description" content="cds bytes is a modern, search-first documentation portal for ABAP Core Data Services (CDS) views, annotations, joins, associations, table functions, AMDP, and DCL.">
+  <meta property="og:description" content="cds bytes is a modern, search-first ABAP CDS portal with runnable examples and key learning points.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://kallolchakraborty.github.io/CDS-bytes/">
-  <meta property="og:image" content="https://kallolchakraborty.github.io/CDS-bytes/assets/og-image.png">
+  <meta property="og:url" content="https://kallolchakraborty.github.io/cds-bytes/">
+  <meta property="og:image" content="https://kallolchakraborty.github.io/cds-bytes/assets/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="cds bytes — ABAP CDS Documentation & Study Materials">
-  <meta name="twitter:description" content="cds bytes is a modern, search-first documentation portal for ABAP Core Data Services (CDS) views, annotations, joins, associations, table functions, AMDP, and DCL.">
-  <link rel="canonical" href="https://kallolchakraborty.github.io/CDS-bytes/">
+  <meta name="twitter:description" content="cds bytes is a modern, search-first ABAP CDS portal with runnable examples and key learning points.">
+  <link rel="canonical" href="https://kallolchakraborty.github.io/cds-bytes/">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23E95420'%3E%3Cpath d='M12 3C7.58 3 4 4.79 4 7v10c0 2.21 3.58 4 8 4s8-1.79 8-4V7c0-2.21-3.58-4-8-4zm0 2c3.87 0 6 1.5 6 2s-2.13 2-6 2-6-1.5-6-2 2.13-2 6-2zM6 17v-2.24c1.2.76 3.29 1.24 6 1.24s4.8-.48 6-1.24V17c0 .5-2.13 2-6 2s-6-1.5-6-2zm0-5v-2.24c1.2.76 3.29 1.24 6 1.24s4.8-.48 6-1.24V12c0 .5-2.13 2-6 2s-6-1.5-6-2z'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,14 +28,14 @@
 </head>
 <body class="font-sans bg-white dark:bg-slate-900 text-slate-900 dark:text-white min-h-screen">
 
-  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white dark:focus:bg-slate-900 focus:text-[#E95420] focus:border focus:border-[#E95420] focus:rounded-lg focus:shadow-lg focus:text-sm focus:font-semibold focus:outline-none focus:ring-2 focus:ring-[#E95420]">Skip to main content</a>
 
   <!-- Navbar -->
   <nav class="fixed top-0 left-0 right-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <a href="index.html" class="flex items-center gap-2 text-lg font-semibold tracking-tight">
-          <span class="material-symbols-outlined text-brand-500 text-[24px]">database</span>
+          <span class="material-symbols-outlined text-brand-500" style="font-size: 24px;">database</span>
           <span>cds bytes</span>
         </a>
         <div class="flex items-center gap-3">
@@ -55,8 +55,8 @@
     <section class="min-h-screen flex items-center justify-center py-16 px-4">
       <div class="max-w-3xl mx-auto text-center">
         <div class="flex justify-center mb-6">
-          <div class="w-28 h-28 rounded-3xl bg-brand-500/10 flex items-center justify-center">
-            <span class="material-symbols-outlined text-brand-500 text-[64px] logo-animate">database</span>
+          <div class="w-28 h-28 rounded-3xl flex items-center justify-center" style="background-color: var(--brand-light);">
+            <span class="material-symbols-outlined text-brand-500 logo-animate" style="font-size: 80px;">database</span>
           </div>
         </div>
         <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
@@ -64,8 +64,7 @@
           <span class="text-brand-500">Reference Examples</span>
         </h1>
         <p class="text-lg text-slate-600 dark:text-slate-400 max-w-xl mx-auto mb-8 leading-relaxed">
-          cds bytes is a modern, search-first documentation portal for ABAP Core Data Services (CDS) views,
-          annotations, joins, associations, table functions, AMDP, and DCL — with runnable examples and key learning points.
+          cds bytes is a modern, search-first ABAP CDS portal with runnable examples and key learning points.
         </p>
         <div class="flex flex-wrap items-center justify-center gap-4">
           <a href="docs.html" class="inline-flex items-center gap-2 px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-lg transition-colors shadow-lg shadow-brand-500/20">

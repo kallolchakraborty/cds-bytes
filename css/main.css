@@ -24,9 +24,12 @@ html.dark {
   --border-default: rgba(255, 255, 255, 0.05);
 }
 html { font-size: 14.4px; }
-body { font-family: 'Ubuntu', sans-serif; }
+body,
+body *:not(.material-symbols-outlined) {
+  font-family: 'Ubuntu', sans-serif !important;
+}
 a { text-decoration: none; }
-button, input { border: none; outline: none; font-family: 'Ubuntu', sans-serif; }
+button, input { border: none; outline: none; }
 
 /* ========== Shared: Scrollbar ========== */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -223,11 +226,13 @@ html.dark #docs-dynamic-content pre code.hljs {
 }
 
 /* ========== Utility buttons: blend into background ========== */
-.theme-toggle-btn, .open-share-btn, #sidebar-toggle {
-  background: transparent !important;
+#themeToggle, .theme-toggle-btn, .open-share-btn, #sidebar-toggle {
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
+}
+.glass-nav #themeToggle, .theme-toggle-btn, .open-share-btn, #sidebar-toggle {
+  background: transparent !important;
   padding: 0 !important;
   margin: 0 !important;
   min-width: 0 !important;
