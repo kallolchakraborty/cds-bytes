@@ -24,6 +24,7 @@ html.dark {
   --border-default: rgba(255, 255, 255, 0.05);
 }
 html { font-size: 14.4px; }
+.max-w-8xl { max-width: 88rem !important; }
 body,
 body *:not(.material-symbols-outlined):not(svg):not(svg *) {
   font-family: 'Ubuntu', sans-serif !important;
@@ -58,7 +59,7 @@ html.dark .glass-nav {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-muted);
-  padding: 12px 0 3px 10px;
+  padding: 12px 8px 3px 10px;
 }
 .sidebar-subheader {
   font-size: 10px;
@@ -167,7 +168,7 @@ html.dark .bg-slate-50\/50, html.dark .bg-slate-100 {
 #docs-dynamic-content a { color: var(--brand-primary); font-weight: 600; }
 #docs-dynamic-content a:hover { color: var(--brand-hover); }
 #docs-dynamic-content h2 {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 600;
   margin-top: 2rem;
   margin-bottom: 0.75rem;
@@ -175,7 +176,7 @@ html.dark .bg-slate-50\/50, html.dark .bg-slate-100 {
   border-bottom: 1px solid var(--border-default);
   color: var(--text-primary);
 }
-#docs-dynamic-content h3 { font-size: 1.125rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--text-secondary); }
+#docs-dynamic-content h3 { font-size: 1.25rem; font-weight: 600; margin-top: 1.75rem; margin-bottom: 0.5rem; color: var(--text-secondary); }
 #docs-dynamic-content p { margin-bottom: 0.75rem; line-height: 1.625; color: var(--text-secondary); }
 #docs-dynamic-content ul, #docs-dynamic-content ol { padding-left: 1.5rem; margin-bottom: 0.75rem; }
 #docs-dynamic-content li { margin-bottom: 0.25rem; line-height: 1.625; color: var(--text-secondary); }

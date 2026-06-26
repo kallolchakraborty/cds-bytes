@@ -38,7 +38,11 @@
     if (phase) {
       badgeHtml = '<span class="phase-badge">Phase ' + phase + (phaseName ? ': ' + phaseName : '') + '</span>';
     }
-    var headerHTML = '<div class="mb-6"><div class="flex items-center gap-3 mb-1"><h1 class="text-2xl font-bold tracking-tight">' + title + '</h1>' + badgeHtml + '</div>' + (description ? '<p class="text-sm text-slate-500 dark:text-slate-400">' + description + '</p>' : '') + '</div>';
+    var headerHTML = '<div class="mb-6 flex flex-col gap-2">' + 
+                     (badgeHtml ? '<div class="flex">' + badgeHtml + '</div>' : '') +
+                     '<h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">' + title + '</h1>' + 
+                     (description ? '<p class="text-sm text-slate-500 dark:text-slate-400 mt-1">' + description + '</p>' : '') + 
+                     '</div>';
     return headerHTML;
   }
 
