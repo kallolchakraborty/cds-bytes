@@ -1,0 +1,29 @@
+{
+  "id": "ZPRAC_CDS_HAVING",
+  "title": "Filter aggregated results using HAVING clause",
+  "phase": 4,
+  "phaseName": "Aggregation & Subqueries",
+  "category": "Aggregation & Subqueries",
+  "subcategory": "Aggregation",
+  "language": "abap",
+  "description": "Filter aggregated results using HAVING clause. Key topics: HAVING filters after GROUP BY — WHERE filters before GROUP BY. HAVING can reference aggregated fields (SUM, COUNT, etc.). WHERE cannot reference aggregated fields — use HAVING instead.",
+  "sections": [
+    {
+      "title": "Key Learning Points",
+      "description": "<div class=\"text-slate-600 dark:text-slate-400 text-sm leading-relaxed\"><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>HAVING filters after GROUP BY — WHERE filters before GROUP BY</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>HAVING can reference aggregated fields (SUM, COUNT, etc.)</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>WHERE cannot reference aggregated fields — use HAVING instead</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>HAVING conditions can include AND/OR just like WHERE</span></div></div>"
+    },
+    {
+      "title": "CDS Source Code",
+      "language": "abap",
+      "codeBlock": "@AbapCatalog.sqlViewName: 'ZPRAC_SQL_HAVING'\n@AbapCatalog.compiler.compareFilter: true\n@AbapCatalog.preserveKey: true\n@AccessControl.authorizationCheck: #CHECK\n@EndUserText.label: 'Practice CDS - HAVING clause on aggregated results'\ndefine view ZPRAC_CDS_HAVING\n  as select from ZPRAC_CDS_GROUP_BY\n{\n  key CustomerID,\n      BookingCount,\n      DistinctAirlines,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      TotalSpent,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      AvgFlightPrice,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      MinFlightPrice,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      MaxFlightPrice,\n      CurrencyCode\n}\nhaving\n      TotalSpent > 1000\n  and BookingCount >= 3\n  and DistinctAirlines > 1"
+    }
+  ],
+  "content": "<h2 id=\"section-ZPRAC_CDS_HAVING-key-learning-points\">Key Learning Points</h2>\n<div class=\"text-slate-600 dark:text-slate-400 text-sm leading-relaxed\"><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>HAVING filters after GROUP BY — WHERE filters before GROUP BY</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>HAVING can reference aggregated fields (SUM, COUNT, etc.)</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>WHERE cannot reference aggregated fields — use HAVING instead</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>HAVING conditions can include AND/OR just like WHERE</span></div></div>\n<h2 id=\"section-ZPRAC_CDS_HAVING-cds-source-code\">CDS Source Code</h2>\n<pre><code class=\"language-abap\">@AbapCatalog.sqlViewName: 'ZPRAC_SQL_HAVING'\n@AbapCatalog.compiler.compareFilter: true\n@AbapCatalog.preserveKey: true\n@AccessControl.authorizationCheck: #CHECK\n@EndUserText.label: 'Practice CDS - HAVING clause on aggregated results'\ndefine view ZPRAC_CDS_HAVING\n  as select from ZPRAC_CDS_GROUP_BY\n{\n  key CustomerID,\n      BookingCount,\n      DistinctAirlines,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      TotalSpent,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      AvgFlightPrice,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      MinFlightPrice,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      MaxFlightPrice,\n      CurrencyCode\n}\nhaving\n      TotalSpent > 1000\n  and BookingCount >= 3\n  and DistinctAirlines > 1</code></pre>",
+  "tags": [
+    "aggregation"
+  ],
+  "details": "<p class=\"mb-2\">EXECUTION ORDER (conceptual):</p><p class=\"mb-2\">FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY</p><p class=\"mb-2\">USE CASE:</p><p class=\"mb-2\">Find customers who are high-value: total spend > 1000 AND</p><p class=\"mb-2\">at least 3 bookings. Only interested in customers with</p><p class=\"mb-2\">more than 1 distinct airline (they fly different carriers).</p>",
+  "cdsViewName": "ZPRAC_CDS_HAVING",
+  "sqlViewName": "ZPRAC_SQL_HAVING",
+  "topic": "HAVING — filtering AFTER GROUP BY aggregation"
+}

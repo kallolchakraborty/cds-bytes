@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 450" font-family="'JetBrains Mono', 'Ubuntu', sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#E95420"/>
+    </marker>
+  </defs>
+
+  <text x="350" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#E95420">Analytical CDS View Structure</text>
+
+  <!-- @Analytics.dataCategory -->
+  <rect x="50" y="50" width="600" height="26" rx="4" fill="#F0FDF4" stroke="#22C55E" stroke-width="1"/>
+  <text x="350" y="67" text-anchor="middle" font-size="10" font-weight="bold" fill="#16A34A">@Analytics.dataCategory: #AGGREGATE / #CUBE / #DIMENSION</text>
+
+  <line x1="350" y1="76" x2="350" y2="95" stroke="#E95420" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Example: Cube -->
+  <rect x="50" y="100" width="600" height="55" rx="8" fill="#FEFCE8" stroke="#EAB308" stroke-width="1.5"/>
+  <text x="70" y="122" font-size="11" font-weight="bold" fill="#CA8A04">@Analytics.dataCategory: #CUBE</text>
+  <text x="70" y="138" font-size="10" fill="#1e293b">define view ZPRAC_CDS_ANALYTICAL</text>
+  <text x="70" y="152" font-size="10" fill="#1e293b">  as select from ZPRAC_CDS_TP_FLIGHT ...</text>
+
+  <!-- Key figure annotation -->
+  <rect x="110" y="170" width="540" height="28" rx="4" fill="#E0F2FE" stroke="#3B82F6" stroke-width="1"/>
+  <text x="350" y="188" text-anchor="middle" font-size="10" fill="#2563EB">@AnalyticsDetails.query.maxLength: 5 — Key Figure / Dimension flags</text>
+
+  <!-- Structure breakdown -->
+  <rect x="50" y="215" width="600" height="200" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="350" y="238" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e293b">Analytical CDS Elements</text>
+
+  <text x="70" y="265" font-size="10" fill="#64748b">Entity Name</text>
+  <text x="200" y="265" font-size="10" fill="#64748b">Purpose</text>
+  <text x="450" y="265" font-size="10" fill="#64748b">Annotation</text>
+  <line x1="70" y1="272" x2="630" y2="272" stroke="#E2E8F0" stroke-width="1"/>
+
+  <text x="70" y="293" font-size="10" fill="#1e293b">ZPRAC_CDS_TP_FLIGHT</text>
+  <text x="200" y="293" font-size="10" fill="#64748b">Cubes are addable to Analytical List Page</text>
+  <text x="450" y="293" font-size="10" fill="#16A34A">#CUBE</text>
+
+  <text x="70" y="318" font-size="10" fill="#1e293b">ZPRAC_CDS_AP_AIRLINE</text>
+  <text x="200" y="318" font-size="10" fill="#64748b">Dimension for grouping and filtering</text>
+  <text x="450" y="318" font-size="10" fill="#16A34A">#DIMENSION</text>
+
+  <text x="70" y="343" font-size="10" fill="#1e293b">ZPRAC_CDS_AP_CARRIER</text>
+  <text x="200" y="343" font-size="10" fill="#64748b">Dimension with text association</text>
+  <text x="450" y="343" font-size="10" fill="#16A34A">#DIMENSION</text>
+
+  <text x="70" y="368" font-size="10" fill="#1e293b">ZPRAC_CDS_APX_FLIGHT</text>
+  <text x="200" y="368" font-size="10" fill="#64748b">Analytical Projection (aggregation + filter)</text>
+  <text x="450" y="368" font-size="10" fill="#3B82F6">@AnalyticsDetails.query</text>
+</svg>

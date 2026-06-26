@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>cds bytes — ABAP CDS Documentation & Study Materials</title>
+  <meta name="description" content="cds bytes is a modern, search-first documentation portal for ABAP Core Data Services (CDS) views, annotations, joins, associations, table functions, AMDP, and DCL.">
+  <meta name="keywords" content="ABAP, CDS, Core Data Services, SAP, documentation, study notes, cheat sheets">
+  <meta name="author" content="Kallol Chakraborty">
+  <meta property="og:title" content="cds bytes — ABAP CDS Documentation & Study Materials">
+  <meta property="og:description" content="cds bytes is a modern, search-first documentation portal for ABAP Core Data Services (CDS) views, annotations, joins, associations, table functions, AMDP, and DCL.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kallolchakraborty.github.io/CDS-bytes/">
+  <meta property="og:image" content="https://kallolchakraborty.github.io/CDS-bytes/assets/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="cds bytes — ABAP CDS Documentation & Study Materials">
+  <meta name="twitter:description" content="cds bytes is a modern, search-first documentation portal for ABAP Core Data Services (CDS) views, annotations, joins, associations, table functions, AMDP, and DCL.">
+  <link rel="canonical" href="https://kallolchakraborty.github.io/CDS-bytes/">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23E95420'%3E%3Cpath d='M12 3C7.58 3 4 4.79 4 7v10c0 2.21 3.58 4 8 4s8-1.79 8-4V7c0-2.21-3.58-4-8-4zm0 2c3.87 0 6 1.5 6 2s-2.13 2-6 2-6-1.5-6-2 2.13-2 6-2zM6 17v-2.24c1.2.76 3.29 1.24 6 1.24s4.8-.48 6-1.24V17c0 .5-2.13 2-6 2s-6-1.5-6-2zm0-5v-2.24c1.2.76 3.29 1.24 6 1.24s4.8-.48 6-1.24V12c0 .5-2.13 2-6 2s-6-1.5-6-2z'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tailwind.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script defer src="js/theme.js"></script>
+  <script defer src="js/generated.js"></script>
+  <script defer src="js/modals.js"></script>
+</head>
+<body class="font-sans bg-white dark:bg-slate-900 text-slate-900 dark:text-white min-h-screen">
+
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Navbar -->
+  <nav class="fixed top-0 left-0 right-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="index.html" class="flex items-center gap-2 text-lg font-semibold tracking-tight">
+          <span class="material-symbols-outlined text-brand-500 text-[24px]">database</span>
+          <span>cds bytes</span>
+        </a>
+        <div class="flex items-center gap-3">
+          <button id="themeToggle" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" aria-label="Toggle theme">
+            <span class="material-symbols-outlined text-slate-600 dark:text-slate-400 text-[20px]">light_mode</span>
+          </button>
+          <button class="open-share-btn w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" aria-label="Share">
+            <span class="material-symbols-outlined text-slate-600 dark:text-slate-400 text-[20px]">share</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <main id="main-content">
+    <section class="min-h-screen flex items-center justify-center py-16 px-4">
+      <div class="max-w-3xl mx-auto text-center">
+        <div class="flex justify-center mb-6">
+          <div class="w-28 h-28 rounded-3xl bg-brand-500/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-brand-500 text-[64px] logo-animate">database</span>
+          </div>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+          ABAP CDS Study Notes &<br>
+          <span class="text-brand-500">Reference Examples</span>
+        </h1>
+        <p class="text-lg text-slate-600 dark:text-slate-400 max-w-xl mx-auto mb-8 leading-relaxed">
+          cds bytes is a modern, search-first documentation portal for ABAP Core Data Services (CDS) views,
+          annotations, joins, associations, table functions, AMDP, and DCL — with runnable examples and key learning points.
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          <a href="docs.html" class="inline-flex items-center gap-2 px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-lg transition-colors shadow-lg shadow-brand-500/20">
+            <span class="material-symbols-outlined text-[20px]">auto_stories</span>
+            <span>Browse Documentation</span>
+            <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+          </a>
+        </div>
+        <!-- Quick stats -->
+        <div class="flex flex-wrap justify-center gap-8 mt-12 text-center">
+          <div>
+            <div class="text-2xl sm:text-3xl font-bold text-brand-500">64</div>
+            <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">CDS Artifacts</div>
+          </div>
+          <div>
+            <div class="text-2xl sm:text-3xl font-bold text-brand-500">15+</div>
+            <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">Topics Covered</div>
+          </div>
+          <div>
+            <div class="text-2xl sm:text-3xl font-bold text-brand-500">ABAP</div>
+            <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">Language</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-200 dark:border-slate-800 py-8 px-4">
+    <div class="max-w-7xl mx-auto text-center text-sm text-slate-500 dark:text-slate-400">
+      Made with ❤️ by <a href="https://www.linkedin.com/in/kallol-chakraborty-9728a699/" class="text-brand-500 hover:underline" target="_blank">Kallol Chakraborty</a>
+    </div>
+  </footer>
+
+  <!-- Search Modal -->
+  <div id="search-modal" class="fixed inset-0 z-50 hidden">
+    <div id="search-modal-backdrop" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+    <div class="absolute top-24 left-1/2 -translate-x-1/2 w-full max-w-lg mx-4">
+      <div class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div class="search-header-container flex items-center gap-3 px-4 py-3 border-b border-slate-200 dark:border-slate-800">
+          <span class="material-symbols-outlined text-slate-400 text-[20px]">search</span>
+          <input id="modal-search-input" type="text" class="flex-1 bg-transparent border-none outline-none focus:ring-0 text-sm placeholder:text-slate-400 text-slate-800 dark:text-slate-200" placeholder="Search CDS artifacts..." autocomplete="off">
+          <button id="close-search-modal" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 font-medium px-2 py-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">ESC</button>
+        </div>
+        <div id="modal-search-results" class="max-h-[80vh] overflow-y-auto">
+          <div class="p-6 text-center text-slate-400 text-sm">Type to search CDS artifacts...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Share Modal -->
+  <div id="share-modal" class="fixed inset-0 z-50 hidden">
+    <div id="share-modal-backdrop" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md mx-4">
+      <div class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold">Share</h3>
+          <button id="close-share-modal" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+            <span class="material-symbols-outlined text-slate-400">close</span>
+          </button>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="share-url-input" type="text" class="flex-1 px-3 py-2 text-sm bg-slate-100 dark:bg-slate-800 rounded-lg border-none focus:ring-2 focus:ring-brand-500 outline-none text-slate-700 dark:text-slate-300" readonly>
+          <button id="copy-link-btn" class="shrink-0 px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium rounded-lg transition-colors">Copy Link</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Material Symbols -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+</body>
+</html>

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 500" font-family="'JetBrains Mono', 'Ubuntu', sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#E95420"/>
+    </marker>
+  </defs>
+
+  <text x="350" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#E95420">VDM Layer Architecture</text>
+
+  <!-- Layer 4: Consumption -->
+  <rect x="150" y="50" width="400" height="70" rx="8" fill="#F0FDF4" stroke="#22C55E" stroke-width="2"/>
+  <text x="350" y="75" text-anchor="middle" font-size="13" font-weight="bold" fill="#16A34A">Consumption View</text>
+  <text x="350" y="95" text-anchor="middle" font-size="10" fill="#166534">Fiori UI / OData service exposure</text>
+  <text x="350" y="110" text-anchor="middle" font-size="9" fill="#64748b">UI annotations, @Search, @Consumption.*</text>
+
+  <line x1="350" y1="120" x2="350" y2="145" stroke="#E95420" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Layer 3: Composite -->
+  <rect x="150" y="150" width="400" height="70" rx="8" fill="#FEFCE8" stroke="#EAB308" stroke-width="2"/>
+  <text x="350" y="175" text-anchor="middle" font-size="13" font-weight="bold" fill="#CA8A04">Composite View</text>
+  <text x="350" y="195" text-anchor="middle" font-size="10" fill="#854D0E">Business logic, joins, calculations</text>
+  <text x="350" y="210" text-anchor="middle" font-size="9" fill="#64748b">Associations, aggregations, currency conversion</text>
+
+  <line x1="350" y1="220" x2="350" y2="245" stroke="#E95420" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Layer 2: Basic -->
+  <rect x="150" y="250" width="400" height="70" rx="8" fill="#FEF2F2" stroke="#EF4444" stroke-width="2"/>
+  <text x="350" y="275" text-anchor="middle" font-size="13" font-weight="bold" fill="#DC2626">Basic / Interface View</text>
+  <text x="350" y="295" text-anchor="middle" font-size="10" fill="#991B1B">Reusable data foundation</text>
+  <text x="350" y="310" text-anchor="middle" font-size="9" fill="#64748b">Field selection, alias, simple filter logic</text>
+
+  <line x1="350" y1="320" x2="350" y2="345" stroke="#E95420" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Layer 1: Private -->
+  <rect x="150" y="350" width="400" height="70" rx="8" fill="#EDE9FE" stroke="#A855F7" stroke-width="2"/>
+  <text x="350" y="375" text-anchor="middle" font-size="13" font-weight="bold" fill="#9333EA">Private View</text>
+  <text x="350" y="395" text-anchor="middle" font-size="10" fill="#581C87">Internal abstraction, hidden from consumers</text>
+  <text x="350" y="410" text-anchor="middle" font-size="9" fill="#64748b">Complex joins, technical mapping, no annotations</text>
+
+  <!-- DB Source arrows -->
+  <line x1="150" y1="385" x2="80" y2="385" stroke="#94A3B8" stroke-width="1" marker-end="url(#arrow)"/>
+  <text x="115" y="378" text-anchor="middle" font-size="8" fill="#64748b">SELECT</text>
+  <text x="115" y="395" text-anchor="middle" font-size="8" fill="#64748b">from</text>
+
+  <rect x="20" y="360" width="60" height="50" rx="6" fill="#1E293B"/>
+  <text x="50" y="385" text-anchor="middle" font-size="10" font-weight="bold" fill="#FFFFFF">DB</text>
+  <text x="50" y="400" text-anchor="middle" font-size="8" fill="#94A3B8">Tables</text>
+
+  <!-- Side label -->
+  <text x="570" y="76" font-size="9" fill="#64748b">👤 Fiori / API</text>
+  <text x="570" y="176" font-size="9" fill="#64748b">🧩 Business Logic</text>
+  <text x="570" y="276" font-size="9" fill="#64748b">📐 Reusable</text>
+  <text x="570" y="376" font-size="9" fill="#64748b">🔒 Internal</text>
+</svg>

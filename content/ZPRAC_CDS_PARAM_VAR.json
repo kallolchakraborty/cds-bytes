@@ -1,0 +1,29 @@
+{
+  "id": "ZPRAC_CDS_PARAM_VAR",
+  "title": "Forwarding ABAP parameters to another parameterized CDS view",
+  "phase": 2,
+  "phaseName": "Parameters & Filtering",
+  "category": "Parameters & Filtering",
+  "subcategory": "Input Parameters",
+  "language": "abap",
+  "description": "Forwarding ABAP parameters to another parameterized CDS view. Key topics: $parameters.<param_name> → References the current view's input params. Used to forward parameters to the underlying CDS view/tf. The downstream view's parameter types must match.",
+  "sections": [
+    {
+      "title": "Key Learning Points",
+      "description": "<div class=\"text-slate-600 dark:text-slate-400 text-sm leading-relaxed\"><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>$parameters.<param_name> → References the current view's input params</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Used to forward parameters to the underlying CDS view/tf</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>The downstream view's parameter types must match</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>This creates a transparent parameter chain: ABAP → View A → View B</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>@Semantics annotations must be maintained at each layer</span></div></div>"
+    },
+    {
+      "title": "CDS Source Code",
+      "language": "abap",
+      "codeBlock": "@AbapCatalog.sqlViewName: 'ZPRAC_SQL_PAR_VAR'\n@AbapCatalog.compiler.compareFilter: true\n@AbapCatalog.preserveKey: true\n@AccessControl.authorizationCheck: #CHECK\n@EndUserText.label: 'Practice CDS - Forwarding parameters via $parameters'\ndefine view ZPRAC_CDS_PARAM_VAR\n  with parameters\n    p1 : /dmo/travel_id,   -- Will be forwarded to ZPRAC_CDS_PARAM\n    p2 : /dmo/agency_id    -- Will be forwarded to ZPRAC_CDS_PARAM\n  as select from ZPRAC_CDS_PARAM( p1_travel_id: $parameters.p1, p2_agency_id: $parameters.p2 )\n{\n  key TravelId,\n      AgencyId,\n      CustomerId,\n      @Semantics.date: true\n      BeginDate,\n      @Semantics.date: true\n      EndDate,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      BookingFee,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      TotalPrice,\n      CurrencyCode,\n      Description\n}"
+    }
+  ],
+  "content": "<h2 id=\"section-ZPRAC_CDS_PARAM_VAR-key-learning-points\">Key Learning Points</h2>\n<div class=\"text-slate-600 dark:text-slate-400 text-sm leading-relaxed\"><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>$parameters.<param_name> → References the current view's input params</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Used to forward parameters to the underlying CDS view/tf</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>The downstream view's parameter types must match</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>This creates a transparent parameter chain: ABAP → View A → View B</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>@Semantics annotations must be maintained at each layer</span></div></div>\n<h2 id=\"section-ZPRAC_CDS_PARAM_VAR-cds-source-code\">CDS Source Code</h2>\n<pre><code class=\"language-abap\">@AbapCatalog.sqlViewName: 'ZPRAC_SQL_PAR_VAR'\n@AbapCatalog.compiler.compareFilter: true\n@AbapCatalog.preserveKey: true\n@AccessControl.authorizationCheck: #CHECK\n@EndUserText.label: 'Practice CDS - Forwarding parameters via $parameters'\ndefine view ZPRAC_CDS_PARAM_VAR\n  with parameters\n    p1 : /dmo/travel_id,   -- Will be forwarded to ZPRAC_CDS_PARAM\n    p2 : /dmo/agency_id    -- Will be forwarded to ZPRAC_CDS_PARAM\n  as select from ZPRAC_CDS_PARAM( p1_travel_id: $parameters.p1, p2_agency_id: $parameters.p2 )\n{\n  key TravelId,\n      AgencyId,\n      CustomerId,\n      @Semantics.date: true\n      BeginDate,\n      @Semantics.date: true\n      EndDate,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      BookingFee,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      TotalPrice,\n      CurrencyCode,\n      Description\n}</code></pre>",
+  "tags": [
+    "parameters"
+  ],
+  "details": "<p class=\"mb-2\">FLOW:</p><p class=\"mb-2\">ABAP Report → ZPRAC_CDS_PARAM_VAR(p1: 'X', p2: 'Y')</p><p class=\"mb-2\">↓</p><p class=\"mb-2\">ZPRAC_CDS_PARAM(p1_travel_id: 'X', p2_agency_id: 'Y')</p><p class=\"mb-2\">↓</p><p class=\"mb-2\">/dmo/travel (database table)</p><p class=\"mb-2\">KEYWORD SYNTAX:</p><p class=\"mb-2\">Parameter mapping uses NAMED notation:</p><p class=\"mb-2\">downstream_view( param1: $parameters.my_param1, ... )</p>",
+  "cdsViewName": "ZPRAC_CDS_PARAM_VAR",
+  "sqlViewName": "ZPRAC_SQL_PAR_VAR",
+  "topic": "$parameters variable — passing input params downstream"
+}

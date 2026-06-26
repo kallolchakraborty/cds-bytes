@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" font-family="'JetBrains Mono', 'Ubuntu', sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#E95420"/>
+    </marker>
+  </defs>
+
+  <text x="400" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#E95420">RAP Architecture Layers</text>
+
+  <!-- Layer stack - top to bottom reading, like ABAP -->
+
+  <!-- UI / Fiori -->
+  <rect x="50" y="55" width="700" height="55" rx="8" fill="#F0FDF4" stroke="#22C55E" stroke-width="2"/>
+  <text x="400" y="78" text-anchor="middle" font-size="13" font-weight="bold" fill="#16A34A">UI Layer</text>
+  <text x="400" y="98" text-anchor="middle" font-size="10" fill="#166534">SAP Fiori / OData V4 UI / Business User</text>
+
+  <line x1="400" y1="110" x2="400" y2="135" stroke="#E95420" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Service Layer -->
+  <rect x="50" y="140" width="700" height="55" rx="8" fill="#E0F2FE" stroke="#3B82F6" stroke-width="2"/>
+  <text x="400" y="163" text-anchor="middle" font-size="13" font-weight="bold" fill="#2563EB">Service Layer</text>
+  <text x="400" y="183" text-anchor="middle" font-size="10" fill="#1E40AF">Service Definition → Service Binding → OData V4 API</text>
+
+  <line x1="400" y1="195" x2="400" y2="220" stroke="#E95420" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Behavior Layer -->
+  <rect x="50" y="225" width="700" height="55" rx="8" fill="#FEFCE8" stroke="#EAB308" stroke-width="2"/>
+  <text x="400" y="248" text-anchor="middle" font-size="13" font-weight="bold" fill="#CA8A04">Behavior Layer</text>
+  <text x="400" y="268" text-anchor="middle" font-size="10" fill="#854D0E">Behavior Definition + Behavior Implementation (ABAP)</text>
+
+  <line x1="400" y1="280" x2="400" y2="305" stroke="#E95420" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Data Model Layer -->
+  <rect x="50" y="310" width="700" height="55" rx="8" fill="#FEF2F2" stroke="#EF4444" stroke-width="2"/>
+  <text x="400" y="333" text-anchor="middle" font-size="13" font-weight="bold" fill="#DC2626">Data Model Layer</text>
+  <text x="400" y="353" text-anchor="middle" font-size="10" fill="#991B1B">CDS View Entities / Projections + RAP BO</text>
+
+  <line x1="400" y1="365" x2="400" y2="390" stroke="#E95420" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Database Layer -->
+  <rect x="50" y="395" width="700" height="55" rx="8" fill="#EDE9FE" stroke="#A855F7" stroke-width="2"/>
+  <text x="400" y="418" text-anchor="middle" font-size="13" font-weight="bold" fill="#9333EA">Database Layer</text>
+  <text x="400" y="438" text-anchor="middle" font-size="10" fill="#581C87">SAP HANA / DDIC Tables + AMDP / Table Functions</text>
+
+  <!-- Side labels -->
+  <text x="15" y="85" font-size="9" fill="#64748b">🎨</text>
+  <text x="15" y="170" font-size="9" fill="#64748b">🔌</text>
+  <text x="15" y="255" font-size="9" fill="#64748b">🧠</text>
+  <text x="15" y="340" font-size="9" fill="#64748b">📊</text>
+  <text x="15" y="425" font-size="9" fill="#64748b">💾</text>
+</svg>

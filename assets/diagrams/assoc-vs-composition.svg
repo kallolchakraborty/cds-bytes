@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" font-family="'JetBrains Mono', 'Ubuntu', sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#E95420"/>
+    </marker>
+  </defs>
+
+  <text x="400" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#E95420">Association vs Composition in CDS</text>
+
+  <!-- Association -->
+  <rect x="40" y="50" width="350" height="320" rx="8" fill="#F0FDF4" stroke="#22C55E" stroke-width="1.5"/>
+  <text x="60" y="75" font-size="14" font-weight="bold" fill="#16A34A">Association</text>
+  <text x="60" y="100" font-size="9" fill="#64748b">define view ZV_Travel</text>
+  <text x="60" y="115" font-size="9" fill="#64748b">  as select from /dmo/travel</text>
+  <text x="60" y="130" font-size="9" fill="#64748b">  association [0..1] to /dmo/agency</text>
+  <text x="60" y="145" font-size="9" fill="#64748b">    as _Agency on $projection.AgencyId = _Agency.agency_id</text>
+  <text x="60" y="160" font-size="9" fill="#64748b">{ ... }</text>
+
+  <!-- Visual: separated boxes -->
+  <rect x="80" y="185" width="260" height="50" rx="6" fill="#DCFCE7" stroke="#22C55E" stroke-width="1"/>
+  <text x="210" y="205" text-anchor="middle" font-size="11" font-weight="bold" fill="#15803D">Travel</text>
+  <text x="210" y="222" text-anchor="middle" font-size="9" fill="#166534">Root Entity</text>
+
+  <line x1="210" y1="240" x2="210" y2="260" stroke="#22C55E" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="180" y="255" font-size="8" fill="#22C55E">read-only link</text>
+
+  <rect x="80" y="265" width="260" height="50" rx="6" fill="#F0FDF4" stroke="#22C55E" stroke-width="1"/>
+  <text x="210" y="285" text-anchor="middle" font-size="11" font-weight="bold" fill="#15803D">Agency</text>
+  <text x="210" y="302" text-anchor="middle" font-size="9" fill="#166534">Independent Entity</text>
+
+  <text x="60" y="355" font-size="10" fill="#64748b">✓ Read-only navigation</text>
+  <text x="60" y="370" font-size="10" fill="#64748b">✓ Target exists independently</text>
+
+  <!-- Composition -->
+  <rect x="410" y="50" width="350" height="320" rx="8" fill="#FEFCE8" stroke="#EAB308" stroke-width="1.5"/>
+  <text x="430" y="75" font-size="14" font-weight="bold" fill="#CA8A04">Composition</text>
+  <text x="430" y="100" font-size="9" fill="#64748b">define view ZV_Travel</text>
+  <text x="430" y="115" font-size="9" fill="#64748b">  as select from /dmo/travel</text>
+  <text x="430" y="130" font-size="9" fill="#64748b">  composition [0..*] of /dmo/booking</text>
+  <text x="430" y="145" font-size="9" fill="#64748b">    as _Booking on $projection.TravelId = _Booking.travel_id</text>
+  <text x="430" y="160" font-size="9" fill="#64748b">{ ... }</text>
+
+  <!-- Visual: nested boxes -->
+  <rect x="450" y="185" width="290" height="130" rx="6" fill="#FEF9C3" stroke="#EAB308" stroke-width="1"/>
+  <text x="595" y="205" text-anchor="middle" font-size="11" font-weight="bold" fill="#A16207">Travel (Root)</text>
+  <text x="595" y="222" text-anchor="middle" font-size="9" fill="#854D0E">Owns children</text>
+
+  <rect x="475" y="240" width="240" height="55" rx="4" fill="#FFFBEB" stroke="#EAB308" stroke-width="1" stroke-dasharray="4"/>
+  <text x="595" y="260" text-anchor="middle" font-size="10" font-weight="bold" fill="#A16207">Booking</text>
+  <text x="595" y="277" text-anchor="middle" font-size="9" fill="#854D0E">Child Entity (dependent)</text>
+
+  <text x="430" y="355" font-size="10" fill="#64748b">✓ Parent-child (whole-part)</text>
+  <text x="430" y="370" font-size="10" fill="#64748b">✓ Children cannot exist without parent</text>
+</svg>

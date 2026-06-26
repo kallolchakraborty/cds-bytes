@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 480" font-family="'JetBrains Mono', 'Ubuntu', sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#E95420"/>
+    </marker>
+  </defs>
+
+  <text x="350" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#E95420">Custom Entity — Data Flow</text>
+
+  <!-- API/External -->
+  <rect x="250" y="50" width="200" height="50" rx="6" fill="#F0FDF4" stroke="#22C55E" stroke-width="1.5"/>
+  <text x="350" y="73" text-anchor="middle" font-size="12" font-weight="bold" fill="#16A34A">External API / BAPI</text>
+  <text x="350" y="90" text-anchor="middle" font-size="9" fill="#64748b">Web service, RFC, database</text>
+
+  <line x1="350" y1="100" x2="350" y2="125" stroke="#E95420" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="370" y="118" font-size="8" fill="#64748b">CALL</text>
+
+  <!-- ABAP Provider -->
+  <rect x="200" y="130" width="300" height="65" rx="6" fill="#FEFCE8" stroke="#EAB308" stroke-width="1.5"/>
+  <text x="350" y="153" text-anchor="middle" font-size="12" font-weight="bold" fill="#CA8A04">ABAP Query Provider Class</text>
+  <text x="350" y="173" text-anchor="middle" font-size="10" fill="#854D0E">IF_RAP_QUERY_PROVIDER~select</text>
+  <text x="350" y="188" text-anchor="middle" font-size="9" fill="#64748b">Filter, sort, paging logic in ABAP</text>
+
+  <line x1="350" y1="195" x2="350" y2="220" stroke="#E95420" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="370" y="213" font-size="8" fill="#64748b">RETURN</text>
+
+  <!-- Custom Entity -->
+  <rect x="210" y="225" width="280" height="50" rx="6" fill="#E0F2FE" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="350" y="248" text-anchor="middle" font-size="12" font-weight="bold" fill="#2563EB">Custom Entity (CDS)</text>
+  <text x="350" y="265" text-anchor="middle" font-size="9" fill="#64748b">@ObjectModel.query.implementedBy</text>
+
+  <line x1="350" y1="275" x2="350" y2="300" stroke="#E95420" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Consumer -->
+  <rect x="210" y="305" width="280" height="50" rx="6" fill="#EDE9FE" stroke="#A855F7" stroke-width="1.5"/>
+  <text x="350" y="328" text-anchor="middle" font-size="12" font-weight="bold" fill="#9333EA">Consumer</text>
+  <text x="350" y="345" text-anchor="middle" font-size="9" fill="#64748b">OData / Fiori / ABAP read via association</text>
+
+  <!-- Syntax example -->
+  <rect x="30" y="380" width="640" height="85" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="350" y="400" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e293b">CDS Definition</text>
+  <text x="50" y="420" font-size="10" fill="#64748b">@ObjectModel.query.implementedBy: 'ABAP:ZCL_PRAC_PURCHASE_QUERY'</text>
+  <text x="50" y="435" font-size="10" fill="#64748b">define root custom entity ZPRAC_CDS_C_PurchaseOrder</text>
+  <text x="50" y="450" font-size="10" fill="#64748b">{ key PurchaseOrder: abap.char(10); CompanyCode: abap.char(4); ... }</text>
+</svg>

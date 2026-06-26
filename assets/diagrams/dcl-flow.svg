@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 420" font-family="'JetBrains Mono', 'Ubuntu', sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#E95420"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#EF4444"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#22C55E"/>
+    </marker>
+  </defs>
+
+  <text x="350" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#E95420">DCL — Access Control Flow</text>
+
+  <!-- User Request -->
+  <rect x="20" y="55" width="160" height="50" rx="6" fill="#F0FDF4" stroke="#22C55E" stroke-width="1.5"/>
+  <text x="100" y="78" text-anchor="middle" font-size="11" font-weight="bold" fill="#16A34A">User Request</text>
+  <text x="100" y="95" text-anchor="middle" font-size="9" fill="#64748b">(ABAP / OData)</text>
+
+  <line x1="180" y1="80" x2="220" y2="80" stroke="#E95420" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- CDS View -->
+  <rect x="225" y="55" width="160" height="50" rx="6" fill="#FEFCE8" stroke="#EAB308" stroke-width="1.5"/>
+  <text x="305" y="78" text-anchor="middle" font-size="11" font-weight="bold" fill="#CA8A04">CDS View</text>
+  <text x="305" y="95" text-anchor="middle" font-size="9" fill="#64748b">@AccessControl.authorizationCheck</text>
+
+  <line x1="385" y1="80" x2="425" y2="80" stroke="#E95420" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- DCL Check -->
+  <rect x="430" y="55" width="200" height="50" rx="6" fill="#FEF2F2" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="530" y="78" text-anchor="middle" font-size="11" font-weight="bold" fill="#DC2626">DCL: Access Control</text>
+  <text x="530" y="95" text-anchor="middle" font-size="9" fill="#64748b">Define PCD / PFCG mapping</text>
+
+  <!-- Decision diamond -->
+  <polygon points="350,145 430,185 350,225 270,185" fill="#EDE9FE" stroke="#A855F7" stroke-width="1.5"/>
+  <text x="350" y="189" text-anchor="middle" font-size="11" font-weight="bold" fill="#9333EA">Access</text>
+  <text x="350" y="203" text-anchor="middle" font-size="11" font-weight="bold" fill="#9333EA">Granted?</text>
+
+  <line x1="350" y1="105" x2="350" y2="140" stroke="#E95420" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Granted path -->
+  <line x1="430" y1="185" x2="550" y2="185" stroke="#22C55E" stroke-width="2" marker-end="url(#arrow-green)"/>
+  <rect x="555" y="165" width="140" height="40" rx="6" fill="#F0FDF4" stroke="#22C55E" stroke-width="1.5"/>
+  <text x="625" y="182" text-anchor="middle" font-size="11" font-weight="bold" fill="#16A34A">Data Returned</text>
+  <text x="625" y="198" text-anchor="middle" font-size="9" fill="#64748b">Filtered set</text>
+
+  <!-- Denied path -->
+  <line x1="270" y1="185" x2="160" y2="185" stroke="#EF4444" stroke-width="2" marker-end="url(#arrow-red)"/>
+  <rect x="20" y="165" width="135" height="40" rx="6" fill="#FEF2F2" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="87" y="182" text-anchor="middle" font-size="11" font-weight="bold" fill="#DC2626">No Data</text>
+  <text x="87" y="198" text-anchor="middle" font-size="9" fill="#64748b">Empty / suppressed</text>
+
+  <!-- DCL syntax example -->
+  <rect x="50" y="260" width="600" height="140" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="350" y="285" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e293b">DCL Syntax Example</text>
+
+  <text x="70" y="310" font-size="10" fill="#64748b">@MappingRole: true</text>
+  <text x="70" y="325" font-size="10" fill="#64748b">define role ZPRAC_TRAVEL_SALES {</text>
+  <text x="90" y="340" font-size="10" fill="#64748b">grant select on ZPRAC_CDS_SIMPLE</text>
+  <text x="110" y="355" font-size="10" fill="#64748b">where (AgencyId) = aspect pfcg_auth( org_value, 'S_CARRID', 'ACTVT' );</text>
+  <text x="70" y="370" font-size="10" fill="#64748b">}</text>
+  <text x="350" y="390" text-anchor="middle" font-size="9" fill="#64748b">PFCG authorization objects → ABAP roles → CDS row-level security</text>
+</svg>

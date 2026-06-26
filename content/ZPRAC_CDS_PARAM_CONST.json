@@ -1,0 +1,29 @@
+{
+  "id": "ZPRAC_CDS_PARAM_CONST",
+  "title": "Passing constants to a parameterized CDS view",
+  "phase": 2,
+  "phaseName": "Parameters & Filtering",
+  "category": "Parameters & Filtering",
+  "subcategory": "Input Parameters",
+  "language": "abap",
+  "description": "Passing constants to a parameterized CDS view. Key topics: A non-parameterized view can consume a parameterized view. Syntax: view_name( param1: 'value1', param2: 'value2' ). This is useful for creating pre-filtered views (e.g. by agency).",
+  "sections": [
+    {
+      "title": "Key Learning Points",
+      "description": "<div class=\"text-slate-600 dark:text-slate-400 text-sm leading-relaxed\"><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>A non-parameterized view can consume a parameterized view</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Syntax: view_name( param1: 'value1', param2: 'value2' )</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>This is useful for creating pre-filtered views (e.g. by agency)</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Alternative: pass $parameters.variable to forward ABAP params</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>@Semantics annotations must be re-declared at each view layer</span></div></div>"
+    },
+    {
+      "title": "CDS Source Code",
+      "language": "abap",
+      "codeBlock": "@AbapCatalog.sqlViewName: 'ZPRAC_SQL_PARAM_C'\n@AbapCatalog.compiler.compareFilter: true\n@AbapCatalog.preserveKey: true\n@AccessControl.authorizationCheck: #CHECK\n@EndUserText.label: 'Practice CDS - Parameterized view with constants'\ndefine view ZPRAC_CDS_PARAM_CONST\n  as select from ZPRAC_CDS_PARAM( p1_travel_id: '00000009', p2_agency_id: '070032' )\n{\n  key TravelId,\n      AgencyId,\n      CustomerId,\n      @Semantics.date: true\n      BeginDate,\n      @Semantics.date: true\n      EndDate,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      BookingFee,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      TotalPrice,\n      CurrencyCode,\n      Description\n}"
+    }
+  ],
+  "content": "<h2 id=\"section-ZPRAC_CDS_PARAM_CONST-key-learning-points\">Key Learning Points</h2>\n<div class=\"text-slate-600 dark:text-slate-400 text-sm leading-relaxed\"><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>A non-parameterized view can consume a parameterized view</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Syntax: view_name( param1: 'value1', param2: 'value2' )</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>This is useful for creating pre-filtered views (e.g. by agency)</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Alternative: pass $parameters.variable to forward ABAP params</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>@Semantics annotations must be re-declared at each view layer</span></div></div>\n<h2 id=\"section-ZPRAC_CDS_PARAM_CONST-cds-source-code\">CDS Source Code</h2>\n<pre><code class=\"language-abap\">@AbapCatalog.sqlViewName: 'ZPRAC_SQL_PARAM_C'\n@AbapCatalog.compiler.compareFilter: true\n@AbapCatalog.preserveKey: true\n@AccessControl.authorizationCheck: #CHECK\n@EndUserText.label: 'Practice CDS - Parameterized view with constants'\ndefine view ZPRAC_CDS_PARAM_CONST\n  as select from ZPRAC_CDS_PARAM( p1_travel_id: '00000009', p2_agency_id: '070032' )\n{\n  key TravelId,\n      AgencyId,\n      CustomerId,\n      @Semantics.date: true\n      BeginDate,\n      @Semantics.date: true\n      EndDate,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      BookingFee,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      TotalPrice,\n      CurrencyCode,\n      Description\n}</code></pre>",
+  "tags": [
+    "parameters"
+  ],
+  "details": "<p class=\"mb-2\">by passing constant values for the parameters</p><p class=\"mb-2\">for proper downstream consumption (OData, Analytics)</p><p class=\"mb-2\">WHEN TO USE:</p><p class=\"mb-2\">- Creating a fixed-reporting view filtered by specific criteria</p><p class=\"mb-2\">- Creating a layer of pre-filtered abstractions on parameterized views</p><p class=\"mb-2\">- Testing with hardcoded test data during development</p>",
+  "cdsViewName": "ZPRAC_CDS_PARAM_CONST",
+  "sqlViewName": "ZPRAC_SQL_PARAM_C",
+  "topic": "View on a parameterized view using hardcoded values"
+}

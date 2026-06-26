@@ -1,0 +1,29 @@
+{
+  "id": "ZPRAC_CDS_VIEW_ON_VIEW",
+  "title": "CDS View built on top of another CDS view (base view)",
+  "phase": 1,
+  "phaseName": "Fundamentals",
+  "category": "Fundamentals",
+  "subcategory": "Core Concepts",
+  "language": "abap",
+  "description": "CDS View built on top of another CDS view (base view). Key topics: A CDS view can SELECT from another CDS view (not just tables). This is the foundation of the VDM layering model. Views can be stacked: Table → Basic View → Composite → Consumption.",
+  "sections": [
+    {
+      "title": "Key Learning Points",
+      "description": "<div class=\"text-slate-600 dark:text-slate-400 text-sm leading-relaxed\"><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>A CDS view can SELECT from another CDS view (not just tables)</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>This is the foundation of the VDM layering model</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Views can be stacked: Table → Basic View → Composite → Consumption</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Performance consideration: Each layer adds complexity; the HANA</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>@Semantics annotations should be applied at each layer as needed</span></div></div>"
+    },
+    {
+      "title": "CDS Source Code",
+      "language": "abap",
+      "codeBlock": "@AbapCatalog.sqlViewName: 'ZPRAC_SQL_VON_V'\n@AbapCatalog.compiler.compareFilter: true\n@AbapCatalog.preserveKey: true\n@AccessControl.authorizationCheck: #CHECK\n@EndUserText.label: 'Practice CDS - View on another CDS view (/DMO/I_Travel_D)'\ndefine view ZPRAC_CDS_VIEW_ON_VIEW\n  as select from /DMO/I_Travel_D\n{\n  key TravelUUID,\n      TravelID,\n      AgencyID,\n      CustomerID,\n      @Semantics.date: true\n      BeginDate,\n      @Semantics.date: true\n      EndDate,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      BookingFee,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      TotalPrice,\n      CurrencyCode,\n      Description\n}"
+    }
+  ],
+  "content": "<h2 id=\"section-ZPRAC_CDS_VIEW_ON_VIEW-key-learning-points\">Key Learning Points</h2>\n<div class=\"text-slate-600 dark:text-slate-400 text-sm leading-relaxed\"><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>A CDS view can SELECT from another CDS view (not just tables)</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>This is the foundation of the VDM layering model</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Views can be stacked: Table → Basic View → Composite → Consumption</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Performance consideration: Each layer adds complexity; the HANA</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>@Semantics annotations should be applied at each layer as needed</span></div></div>\n<h2 id=\"section-ZPRAC_CDS_VIEW_ON_VIEW-cds-source-code\">CDS Source Code</h2>\n<pre><code class=\"language-abap\">@AbapCatalog.sqlViewName: 'ZPRAC_SQL_VON_V'\n@AbapCatalog.compiler.compareFilter: true\n@AbapCatalog.preserveKey: true\n@AccessControl.authorizationCheck: #CHECK\n@EndUserText.label: 'Practice CDS - View on another CDS view (/DMO/I_Travel_D)'\ndefine view ZPRAC_CDS_VIEW_ON_VIEW\n  as select from /DMO/I_Travel_D\n{\n  key TravelUUID,\n      TravelID,\n      AgencyID,\n      CustomerID,\n      @Semantics.date: true\n      BeginDate,\n      @Semantics.date: true\n      EndDate,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      BookingFee,\n      @Semantics.amount.currencyCode: 'CurrencyCode'\n      TotalPrice,\n      CurrencyCode,\n      Description\n}</code></pre>",
+  "tags": [
+    "cds-view"
+  ],
+  "details": "<p class=\"mb-2\">optimizer compiles the chain into one SQL, but very deep stacks</p><p class=\"mb-2\">can impact readability and maintenance</p><p class=\"mb-2\">STANDARD BASE VIEW USED:</p><p class=\"mb-2\">/DMO/I_Travel_D — SAP's standard interface view for Travel data</p><p class=\"mb-2\">This is a SAP-delivered CDS view under the /DMO/ namespace</p><p class=\"mb-2\">WHEN TO USE:</p><p class=\"mb-2\">- Adding business logic on top of existing views</p><p class=\"mb-2\">- Creating specialized subsets for different consumers (Fiori, Analytics)</p><p class=\"mb-2\">- Applying different authorization checks at different layers</p>",
+  "cdsViewName": "ZPRAC_CDS_VIEW_ON_VIEW",
+  "sqlViewName": "ZPRAC_SQL_VON_V",
+  "topic": "View-on-View — layering CDS views"
+}

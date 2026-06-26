@@ -1,0 +1,11 @@
+{
+  "name": "cds-bytes",
+  "version": "1.0.0",
+  "private": true,
+  "description": "45 ABAP CDS artifacts documentation site — CDS Bytes",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "python3 -m http.server 3000"
+  }
+}

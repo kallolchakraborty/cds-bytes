@@ -1,0 +1,29 @@
+{
+  "id": "ZPRAC_CDS_INTRO",
+  "title": "CDS Overview & Tooling — ADT setup, package creation, CDS",
+  "phase": 1,
+  "phaseName": "Fundamentals",
+  "category": "Fundamentals",
+  "subcategory": "Getting Started",
+  "language": "abap",
+  "description": "CDS Overview & Tooling — ADT setup, package creation, CDS. Key topics: ADT (ABAP Development Tools) for Eclipse is mandatory — install. Create or use a transportable package (e.g. ZCDS_PRAC) to hold. Use the New > Data Definition wizard (Ctrl+N) → DDL Source →.",
+  "sections": [
+    {
+      "title": "Key Learning Points",
+      "description": "<div class=\"text-slate-600 dark:text-slate-400 text-sm leading-relaxed\"><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>ADT (ABAP Development Tools) for Eclipse is mandatory — install</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Create or use a transportable package (e.g. ZCDS_PRAC) to hold</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Use the New > Data Definition wizard (Ctrl+N) → DDL Source →</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>The CDS DDL editor provides syntax highlighting, code completion</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Activation (Ctrl+F3) creates the ABAP Dictionary SQL view and</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Use Data Preview (F8) on the activated CDS view to inspect data</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Transports carry the DDL source; the SQL view is generated</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>The ABAP Flight Reference Scenario (/DMO/) provides demo tables</span></div></div>"
+    },
+    {
+      "title": "CDS Source Code",
+      "language": "abap",
+      "codeBlock": "@AccessControl.authorizationCheck: #NOT_REQUIRED\n@EndUserText.label: 'CDS Intro — Hello World'\ndefine view entity ZPRAC_CDS_INTRO\n  as select from /dmo/travel\n{\n  key travel_id     as TravelId,\n      agency_id     as AgencyId,\n      customer_id   as CustomerId,\n      begin_date    as BeginDate,\n      end_date      as EndDate,\n      status        as Status,\n      total_price   as TotalPrice,\n      description   as Description\n}"
+    }
+  ],
+  "content": "<h2 id=\"section-ZPRAC_CDS_INTRO-key-learning-points\">Key Learning Points</h2>\n<div class=\"text-slate-600 dark:text-slate-400 text-sm leading-relaxed\"><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>ADT (ABAP Development Tools) for Eclipse is mandatory — install</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Create or use a transportable package (e.g. ZCDS_PRAC) to hold</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Use the New > Data Definition wizard (Ctrl+N) → DDL Source →</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>The CDS DDL editor provides syntax highlighting, code completion</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Activation (Ctrl+F3) creates the ABAP Dictionary SQL view and</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Use Data Preview (F8) on the activated CDS view to inspect data</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>Transports carry the DDL source; the SQL view is generated</span></div><div class=\"flex items-start gap-2 mb-1.5\"><span class=\"text-brand-500 mt-0.5 shrink-0\">◆</span><span>The ABAP Flight Reference Scenario (/DMO/) provides demo tables</span></div></div>\n<h2 id=\"section-ZPRAC_CDS_INTRO-cds-source-code\">CDS Source Code</h2>\n<pre><code class=\"language-abap\">@AccessControl.authorizationCheck: #NOT_REQUIRED\n@EndUserText.label: 'CDS Intro — Hello World'\ndefine view entity ZPRAC_CDS_INTRO\n  as select from /dmo/travel\n{\n  key travel_id     as TravelId,\n      agency_id     as AgencyId,\n      customer_id   as CustomerId,\n      begin_date    as BeginDate,\n      end_date      as EndDate,\n      status        as Status,\n      total_price   as TotalPrice,\n      description   as Description\n}</code></pre>",
+  "tags": [
+    "cds-views"
+  ],
+  "details": "<p class=\"mb-2\">the ADT plugin and connect to an ABAP system (740 SP08+).</p><p class=\"mb-2\">all CDS artefacts.</p><p class=\"mb-2\">choose a package and request a transport.</p><p class=\"mb-2\">(Ctrl+Space), and annotation proposals.</p><p class=\"mb-2\">the CDS entity in the system.</p><p class=\"mb-2\">without writing ABAP code.</p><p class=\"mb-2\">automatically on target systems after import + activation.</p><p class=\"mb-2\">(travel, booking, customer, agency) shipped with every AS ABAP.</p><p class=\"mb-2\">USAGE IN ABAP:</p><p class=\"mb-2\">DATA lt_travel TYPE STANDARD TABLE OF ZPRAC_CDS_INTRO.</p><p class=\"mb-2\">SELECT * FROM ZPRAC_CDS_INTRO INTO TABLE @lt_travel UP TO 10 ROWS.</p><p class=\"mb-2\">cl_demo_output=>display( lt_travel ).</p>",
+  "cdsViewName": "ZPRAC_CDS_INTRO",
+  "sqlViewName": "ZPRAC_CDS_INTRO",
+  "topic": "Getting Started with ABAP CDS — prerequisites and workflow"
+}
