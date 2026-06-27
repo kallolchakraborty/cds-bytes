@@ -30,6 +30,7 @@
         { name: 'description', weight: 2 },
         { name: 'tags', weight: 2 },
         { name: 'sectionsText', weight: 1.5 },
+        { name: 'code', weight: 1.5 },
         { name: 'detailsText', weight: 1 },
         { name: 'category', weight: 1 },
         { name: 'phaseName', weight: 1 }

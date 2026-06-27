@@ -378,7 +378,8 @@ for (const entry of fileEntries) {
     description: description.substring(0, 160),
     sections: firstSections,
     sectionsText: sectionsText,
-    detailsText: detailsText
+    detailsText: detailsText,
+    code: data.sourceCode
   });
 
   console.log(`✓ [Phase ${entry.phase}] ${data.hashId}`);
