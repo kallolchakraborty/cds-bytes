@@ -83,12 +83,89 @@
 
     main.innerHTML = header + '<div class="content">' + sectionsHtml + '</div>';
 
-    // Highlight code blocks
-    if (typeof hljs !== 'undefined') {
-      main.querySelectorAll('pre code').forEach(function(block) {
-        hljs.highlightElement(block);
+    // Enhance code blocks with actions (Copy, Download) and Line Numbers
+    main.querySelectorAll('#docs-dynamic-content pre').forEach(function(pre) {
+      var code = pre.querySelector('code');
+      if (!code) return;
+
+      var rawCode = code.textContent || code.innerText;
+      var lines = rawCode.replace(/\r\n/g, '\n').split('\n');
+      if (lines.length > 0 && lines[lines.length - 1] === '') {
+        lines.pop();
+      }
+      var lineCount = lines.length;
+
+      var lineNumbersHtml = '';
+      for (var i = 1; i <= lineCount; i++) {
+        lineNumbersHtml += '<div>' + i + '</div>';
+      }
+
+      var wrapper = document.createElement('div');
+      wrapper.className = 'code-block-wrapper';
+
+      var header = document.createElement('div');
+      header.className = 'code-block-header';
+      
+      var langLabel = document.createElement('span');
+      langLabel.className = 'code-block-lang';
+      var lang = code.className.replace('language-', '').toUpperCase() || 'ABAP';
+      if (lang.indexOf('HLJS') !== -1) lang = 'ABAP';
+      langLabel.textContent = lang;
+
+      var actions = document.createElement('div');
+      actions.className = 'code-block-actions';
+
+      var copyBtn = document.createElement('button');
+      copyBtn.className = 'code-action-btn copy-btn';
+      copyBtn.innerHTML = '<span class="material-symbols-outlined">content_copy</span><span>Copy</span>';
+      copyBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText(rawCode).then(function() {
+          copyBtn.innerHTML = '<span class="material-symbols-outlined" style="color: #22C55E !important;">check</span><span style="color: #22C55E !important;">Copied!</span>';
+          setTimeout(function() {
+            copyBtn.innerHTML = '<span class="material-symbols-outlined">content_copy</span><span>Copy</span>';
+          }, 2000);
+        });
       });
-    }
+
+      var downloadBtn = document.createElement('button');
+      downloadBtn.className = 'code-action-btn download-btn';
+      downloadBtn.innerHTML = '<span class="material-symbols-outlined">download</span><span>Download</span>';
+      downloadBtn.addEventListener('click', function() {
+        var filename = (data.id || 'source') + '.asddls';
+        var blob = new Blob([rawCode], { type: 'text/plain;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      actions.appendChild(copyBtn);
+      actions.appendChild(downloadBtn);
+      header.appendChild(langLabel);
+      header.appendChild(actions);
+
+      var container = document.createElement('div');
+      container.className = 'code-container';
+
+      var gutter = document.createElement('div');
+      gutter.className = 'line-numbers-gutter';
+      gutter.innerHTML = lineNumbersHtml;
+
+      pre.parentNode.replaceChild(wrapper, pre);
+      
+      container.appendChild(gutter);
+      container.appendChild(pre);
+      wrapper.appendChild(header);
+      wrapper.appendChild(container);
+
+      if (typeof hljs !== 'undefined') {
+        hljs.highlightElement(code);
+      }
+    });
 
     // Format SVG elements and fix text overlapping/overflow issues
     main.querySelectorAll('.docs-diagram svg').forEach(function(svg) {

@@ -199,13 +199,100 @@ html.dark .bg-slate-50\/50, html.dark .bg-slate-100 {
   border-radius: 4px;
   color: var(--brand-primary);
 }
-#docs-dynamic-content pre {
-  background: var(--bg-secondary) !important;
+/* ========== Code block wrapper and header ========== */
+.code-block-wrapper {
+  position: relative;
   border: 1px solid var(--border-default);
   border-radius: 10px;
-  padding: 1.25rem !important;
-  overflow-x: auto;
   margin: 1.5rem 0;
+  background: var(--bg-secondary);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+html.dark .code-block-wrapper {
+  background: #0d1117;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+.code-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 0, 0, 0.02);
+  border-bottom: 1px solid var(--border-default);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  user-select: none;
+}
+html.dark .code-block-header {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+.code-block-lang {
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.code-block-actions {
+  display: flex;
+  gap: 12px;
+}
+.code-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+.code-action-btn:hover {
+  color: var(--brand-primary);
+  background: var(--brand-light);
+}
+.code-action-btn span.material-symbols-outlined {
+  font-size: 14px !important;
+}
+
+/* ========== Code container with line numbers ========== */
+.code-container {
+  display: flex;
+  align-items: stretch;
+  background: transparent;
+}
+.line-numbers-gutter {
+  padding: 1.25rem 0.75rem;
+  background: rgba(0, 0, 0, 0.01);
+  border-right: 1px solid var(--border-default);
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  color: var(--text-muted);
+  user-select: none;
+  min-width: 2.25rem;
+}
+html.dark .line-numbers-gutter {
+  background: rgba(255, 255, 255, 0.005);
+  border-right-color: rgba(255, 255, 255, 0.05);
+}
+.line-numbers-gutter div {
+  height: 19.5px;
+}
+
+/* Customize the pre inside container */
+#docs-dynamic-content pre {
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 1.25rem 1rem !important;
+  overflow-x: auto;
+  flex-grow: 1;
   font-family: 'JetBrains Mono', monospace !important;
   font-size: 13px !important;
   line-height: 1.5 !important;
