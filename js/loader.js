@@ -1,11 +1,15 @@
 (function() {
+  // DOM element references
   var main = document.getElementById('docs-dynamic-content');
   var rightOutline = document.getElementById('docs-right-outline');
   var shareUrlInput = document.getElementById('share-url-input');
   var shareTrigger = document.querySelector('.open-share-btn');
+  
+  // HTML templates for loading and error states
   var loadingHTML = '<div class="flex items-center justify-center py-16"><div class="flex items-center gap-3 text-slate-400"><span class="material-symbols-outlined text-[20px] animate-spin">progress_activity</span><span class="text-sm">Loading content...</span></div></div>';
   var errorHTML = '<div class="text-center py-16"><div class="text-slate-400 mb-4"><span class="material-symbols-outlined text-[48px]">error_outline</span></div><p class="text-slate-600 dark:text-slate-400 text-sm mb-4">Failed to load content. Please try again.</p><button id="retryBtn" class="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium rounded-lg transition-colors">Retry</button></div>';
 
+  // Global routing and navigation state variables
   var routeMap = window.__ROUTE_MAP || {};
   var contentCache = {};
   var currentHash = null;
@@ -13,12 +17,18 @@
   var allLinks = document.querySelectorAll('#left-sidebar .sidebar-link');
   var backdrop = document.getElementById('sidebar-backdrop');
 
+  /**
+   * Closes the mobile side-navigation bar by triggering backdrop click.
+   */
   function closeMobileSidebar() {
     if (backdrop && !backdrop.classList.contains('hidden')) {
       backdrop.click();
     }
   }
 
+  /**
+   * Updates the navigation sidebar to highlight the active section link.
+   */
   function setActiveLink(hash) {
     allLinks.forEach(function(link) {
       var href = link.getAttribute('href');
@@ -32,6 +42,9 @@
     });
   }
 
+  /**
+   * Updates the browser window title and returns the generated HTML header string.
+   */
   function updatePageTitle(title, description, phase, phaseName) {
     document.title = title + ' - CDS Bytes';
     var badgeHtml = '';
@@ -46,6 +59,9 @@
     return headerHTML;
   }
 
+  /**
+   * Updates the share URL input field and updates location hash in history.
+   */
   function updateShareUrl(hash) {
     if (!shareUrlInput) return;
     var url = window.location.origin + window.location.pathname + '#' + hash;
