@@ -68,12 +68,14 @@
       sectionsHtml = data.content;
     } else if (sections.length > 0) {
       sectionsHtml = sections.map(function(s) {
-        var id = s.title.toLowerCase().replace(/\s+/g, '-');
+        var sTitle = s.title || '';
+        var id = sTitle.toLowerCase().replace(/\s+/g, '-');
+        var heading = sTitle ? '<h2 id="section-' + id + '">' + sTitle + '</h2>\n' : '';
         if (s.codeBlock) {
-          return '<h2 id="section-' + id + '">' + s.title + '</h2>\n<pre><code class="language-abap">' + s.codeBlock + '</code></pre>';
+          return heading + '<pre><code class="language-abap">' + s.codeBlock + '</code></pre>';
         }
         if (s.description) {
-          return '<h2 id="section-' + id + '">' + s.title + '</h2>\n' + s.description;
+          return heading + s.description;
         }
         return '';
       }).join('\n');
@@ -251,9 +253,10 @@
       return;
     }
     var html = sections.map(function(s) {
+      if (!s.title) return '';
       var sectionId = s.id || s.title.toLowerCase().replace(/\s+/g, '-');
       return '<a href="#section-' + artifactId + '-' + sectionId + '" class="outline-link">' + s.title + '</a>';
-    }).join('');
+    }).filter(Boolean).join('');
     rightOutline.innerHTML = html;
 
     // Add smooth scroll click handlers
