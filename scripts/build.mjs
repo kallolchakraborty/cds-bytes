@@ -150,7 +150,11 @@ function extractContent(filePath, fileName) {
     const diagramPath = join(PROJECT_ROOT, ref);
     if (existsSync(diagramPath)) {
       try {
-        const svgContent = readFileSync(diagramPath, 'utf-8');
+        let svgContent = readFileSync(diagramPath, 'utf-8');
+        // Watermark inline SVGs to deter casual scraping
+        if (svgContent.includes('<svg')) {
+          svgContent = svgContent.replace('</svg>', '<text x="10" y="20" font-size="8" fill="rgba(233,84,32,0.15)" font-family="sans-serif">cds-bytes (c) 2026</text></svg>');
+        }
         diagramHtml += svgContent.replace(/^<\?xml[^>]*\?>/, '').trim();
       } catch (e) {
         console.warn(`  ⚠ Could not read diagram: ${ref}`);
@@ -436,4 +440,44 @@ window.__SEARCH_INDEX = ${JSON.stringify(searchIndex)};
 writeFileSync(join(JS_DIR, 'generated.js'), generatedJs);
 console.log(`\n✓ Generated route map with ${Object.keys(routeMap).length} entries`);
 console.log(`✓ Generated search index with ${searchIndex.length} entries`);
+
+// ── Sitemap Generation ──
+function generateSitemap() {
+  const today = new Date().toISOString().split('T')[0];
+  const urls = [
+    { loc: 'https://kallolchakraborty.github.io/cds-bytes/', priority: 1.0, changefreq: 'weekly', lastmod: today },
+    { loc: 'https://kallolchakraborty.github.io/cds-bytes/docs.html', priority: 0.9, changefreq: 'weekly', lastmod: today },
+  ];
+  for (const entry of fileEntries) {
+    urls.push({
+      loc: `https://kallolchakraborty.github.io/cds-bytes/docs.html#${entry.file}`,
+      priority: 0.8,
+      changefreq: 'monthly',
+      lastmod: today
+    });
+  }
+  if (existsSync(join(PROJECT_ROOT, 'content/ZPRAC_STUDY_PLAN.json'))) {
+    urls.push({
+      loc: 'https://kallolchakraborty.github.io/cds-bytes/docs.html#ZPRAC_STUDY_PLAN',
+      priority: 0.8,
+      changefreq: 'monthly',
+      lastmod: today
+    });
+  }
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+  for (const u of urls) {
+    xml += '  <url>\n';
+    xml += `    <loc>${u.loc}</loc>\n`;
+    xml += `    <lastmod>${u.lastmod}</lastmod>\n`;
+    xml += `    <changefreq>${u.changefreq}</changefreq>\n`;
+    xml += `    <priority>${u.priority.toFixed(1)}</priority>\n`;
+    xml += '  </url>\n';
+  }
+  xml += '</urlset>\n';
+  writeFileSync(join(PROJECT_ROOT, 'sitemap.xml'), xml);
+  console.log(`✓ Generated sitemap with ${urls.length} URLs`);
+}
+generateSitemap();
+
 console.log(`\nDone! Content files created: ${contentFiles.length}`);

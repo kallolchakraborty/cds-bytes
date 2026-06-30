@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "start": "python3 -m http.server 3000"
+    "start": "python3 -m http.server 3000",
+
   }
 }

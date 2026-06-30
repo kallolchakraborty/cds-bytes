@@ -1,4 +1,53 @@
 (function() {
+  function sanitizeHtml(html) {
+    var doc = document.implementation.createHTMLDocument('');
+    doc.body.innerHTML = html;
+    Array.from(doc.body.querySelectorAll('*')).forEach(function (el) {
+      Array.from(el.attributes).forEach(function (attr) {
+        if (/^on/i.test(attr.name)) el.removeAttribute(attr.name);
+        if (attr.name === 'href' && /^\s*javascript:/i.test(attr.value)) el.removeAttribute('href');
+      });
+    });
+    Array.from(doc.body.querySelectorAll('script, iframe, object, embed')).forEach(function (el) { el.remove(); });
+    return doc.body.innerHTML;
+  }
+
+  function injectJsonLd(data) {
+    var jsonld = document.getElementById('jsonld-dynamic');
+    if (!jsonld) {
+      jsonld = document.createElement('script');
+      jsonld.id = 'jsonld-dynamic';
+      jsonld.type = 'application/ld+json';
+      document.head.appendChild(jsonld);
+    }
+    var schema = {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": data.title || '',
+      "name": data.title || '',
+      "description": data.description || '',
+      "url": window.location.href,
+      "publisher": { "@type": "Person", "name": "Kallol Chakraborty" },
+      "mainEntityOfPage": { "@id": "https://kallolchakraborty.github.io/cds-bytes/" }
+    };
+    jsonld.textContent = JSON.stringify(schema);
+  }
+
+  function updateMetaTags(title, description) {
+    var ogTitle = document.querySelector('meta[property="og:title"]');
+    var ogDesc = document.querySelector('meta[property="og:description"]');
+    var ogUrl = document.querySelector('meta[property="og:url"]');
+    var twTitle = document.querySelector('meta[name="twitter:title"]');
+    var twDesc = document.querySelector('meta[name="twitter:description"]');
+    var canonical = document.querySelector('link[rel="canonical"]');
+    if (ogTitle) ogTitle.setAttribute('content', title);
+    if (ogDesc && description) ogDesc.setAttribute('content', description);
+    if (ogUrl) ogUrl.setAttribute('content', window.location.href);
+    if (twTitle) twTitle.setAttribute('content', title);
+    if (twDesc && description) twDesc.setAttribute('content', description);
+    if (canonical) canonical.setAttribute('href', window.location.href);
+  }
+
   // DOM element references
   var main = document.getElementById('docs-dynamic-content');
   var rightOutline = document.getElementById('docs-right-outline');
@@ -47,6 +96,7 @@
    */
   function updatePageTitle(title, description, phase, phaseName) {
     document.title = title + ' - CDS Bytes';
+    updateMetaTags(title + ' - CDS Bytes', description);
     var badgeHtml = '';
     if (phase) {
       badgeHtml = '<span class="phase-badge">Phase ' + phase + (phaseName ? ': ' + phaseName : '') + '</span>';
@@ -70,6 +120,25 @@
       shareTrigger.setAttribute('data-href', url);
     }
     window.history.replaceState(null, '', '#' + hash);
+  }
+
+  function fetchWithRetry(path, maxAttempts) {
+    var lastErr;
+    function attempt(n) {
+      return fetch(path, { cache: 'no-cache' }).then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      }).catch(function(err) {
+        lastErr = err;
+        if (n < maxAttempts) {
+          return new Promise(function(resolve) {
+            setTimeout(function() { resolve(attempt(n + 1)); }, Math.min(1000, 200 * n));
+          });
+        }
+        throw lastErr;
+      });
+    }
+    return attempt(1);
   }
 
   function renderContent(data, hash) {
@@ -99,7 +168,10 @@
 
     var header = updatePageTitle(title, description, data.phase, data.phaseName);
 
-    main.innerHTML = header + '<div class="content">' + sectionsHtml + '</div>';
+    main.innerHTML = header + '<div class="content">' + sanitizeHtml(sectionsHtml) + '</div>';
+
+    updateMetaTags(title + ' - CDS Bytes', description);
+    injectJsonLd(data);
 
     // Enhance code blocks with actions (Copy, Download) and Line Numbers
     main.querySelectorAll('#docs-dynamic-content pre').forEach(function(pre) {
@@ -325,11 +397,7 @@
       renderContent(cached, hash);
       return;
     }
-    fetch(contentPath)
-      .then(function(res) {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-      })
+    fetchWithRetry(contentPath, 3)
       .then(function(data) {
         contentCache[hash] = data;
         renderContent(data, hash);

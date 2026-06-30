@@ -1,4 +1,17 @@
 (function() {
+  function sanitizeHtml(html) {
+    var doc = document.implementation.createHTMLDocument('');
+    doc.body.innerHTML = html;
+    Array.from(doc.body.querySelectorAll('*')).forEach(function (el) {
+      Array.from(el.attributes).forEach(function (attr) {
+        if (/^on/i.test(attr.name)) el.removeAttribute(attr.name);
+        if (attr.name === 'href' && /^\s*javascript:/i.test(attr.value)) el.removeAttribute('href');
+      });
+    });
+    Array.from(doc.body.querySelectorAll('script, iframe, object, embed')).forEach(function (el) { el.remove(); });
+    return doc.body.innerHTML;
+  }
+
   // Search modal
   var searchModal = document.getElementById('search-modal');
   var searchInput = document.getElementById('modal-search-input');

@@ -1,41 +1,53 @@
 <!DOCTYPE html>
-<html lang="en" class="">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <meta name="google-site-verification" content="REPLACE_WITH_YOUR_VERIFICATION_CODE" />
   <title>cds bytes — ABAP CDS Documentation & Study Materials</title>
-  <meta name="description" content="cds bytes is a modern, search-first ABAP CDS portal with runnable examples and key learning points.">
-  <meta name="keywords" content="ABAP, CDS, Core Data Services, SAP, documentation, study notes, cheat sheets">
-  <meta name="author" content="Kallol Chakraborty">
-  <meta name="theme-color" content="#E95420">
-  <meta property="og:title" content="cds bytes — ABAP CDS Documentation & Study Materials">
-  <meta property="og:description" content="cds bytes is a modern, search-first ABAP CDS portal with runnable examples and key learning points.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://kallolchakraborty.github.io/cds-bytes/">
-  <meta property="og:image" content="https://kallolchakraborty.github.io/cds-bytes/assets/og-image.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="cds bytes — ABAP CDS Documentation & Study Materials">
-  <meta name="twitter:description" content="cds bytes is a modern, search-first ABAP CDS portal with runnable examples and key learning points.">
-  <link rel="canonical" href="https://kallolchakraborty.github.io/cds-bytes/">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23E95420'%3E%3Cpath d='M12 3C7.58 3 4 4.79 4 7v10c0 2.21 3.58 4 8 4s8-1.79 8-4V7c0-2.21-3.58-4-8-4zm0 2c3.87 0 6 1.5 6 2s-2.13 2-6 2-6-1.5-6-2 2.13-2 6-2zM6 17v-2.24c1.2.76 3.29 1.24 6 1.24s4.8-.48 6-1.24V17c0 .5-2.13 2-6 2s-6-1.5-6-2zm0-5v-2.24c1.2.76 3.29 1.24 6 1.24s4.8-.48 6-1.24V12c0 .5-2.13 2-6 2s-6-1.5-6-2z'/%3E%3C/svg%3E">
+  <meta name="description" content="Modern, search-first ABAP CDS portal with runnable examples, annotations, joins, associations, table functions, AMDP, and DCL for SAP BTP." />
+  <meta property="og:title" content="cds bytes — ABAP CDS Documentation &amp; Study Materials" />
+  <meta property="og:description" content="Modern, search-first ABAP CDS portal with runnable examples, annotations, joins, associations, table functions, AMDP, and DCL for SAP BTP." />
+  <meta property="og:image" content="https://kallolchakraborty.github.io/cds-bytes/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:url" content="https://kallolchakraborty.github.io/cds-bytes/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="cds bytes" />
+  <meta property="og:locale" content="en_US" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="cds bytes — ABAP CDS Documentation &amp; Study Materials" />
+  <meta name="twitter:description" content="Modern, search-first ABAP CDS portal with runnable examples, annotations, joins, associations, table functions, AMDP, and DCL for SAP BTP." />
+  <meta name="twitter:image" content="https://kallolchakraborty.github.io/cds-bytes/assets/og-image.png" />
+  <meta name="twitter:image:alt" content="cds bytes — ABAP Core Data Services documentation portal" />
+  <meta name="keywords" content="ABAP, CDS, Core Data Services, SAP, BTP, documentation, study notes, cheat sheets, annotations, joins, associations, table functions, AMDP, DCL, access control, VDM, virtual data model" />
+  <meta name="author" content="Kallol Chakraborty" />
+  <meta name="robots" content="index, follow, noarchive" />
+  <meta name="theme-color" content="#E95420" />
+  <meta name="theme-color" content="#F5A389" media="(prefers-color-scheme: dark)" />
+  <link rel="canonical" href="https://kallolchakraborty.github.io/cds-bytes/" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192x192.png" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://kallolchakraborty.github.io/cds-bytes/#website","url":"https://kallolchakraborty.github.io/cds-bytes/","name":"cds bytes","description":"Modern, search-first ABAP CDS documentation portal with runnable examples.","publisher":{"@id":"https://kallolchakraborty.github.io/cds-bytes/#person"},"potentialAction":{"@type":"SearchAction","target":"https://kallolchakraborty.github.io/cds-bytes/docs.html#{search_term_string}","query-input":"required name=search_term_string"}},{"@type":"Person","@id":"https://kallolchakraborty.github.io/cds-bytes/#person","name":"Kallol Chakraborty","url":"https://www.linkedin.com/in/kallol-chakraborty-9728a699/"}]}</script>
+  <link rel="prefetch" href="docs.html" as="document" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/tailwind.css">
-  <link rel="stylesheet" href="css/main.css">
-  <script defer src="js/theme.js"></script>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link rel="preload" href="css/tailwind.css" as="style" />
+  <link rel="preload" href="css/main.css" as="style" />
+  <script src="js/theme.js"></script>
+  <link href="css/tailwind.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" /></noscript>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" /></noscript>
   <script defer src="js/generated.js"></script>
   <script defer src="js/modals.js"></script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "cds bytes",
-    "url": "https://kallolchakraborty.github.io/cds-bytes/",
-    "description": "cds bytes is a modern, search-first ABAP CDS portal with runnable examples and key learning points."
-  }
-  </script>
 </head>
 <body class="font-sans bg-white dark:bg-slate-900 text-slate-900 dark:text-white min-h-screen flex flex-col justify-between">
 
@@ -105,7 +117,7 @@
 
   <footer class="border-t border-slate-200 dark:border-slate-800 py-4 px-4">
     <div class="max-w-7xl mx-auto text-center text-sm text-slate-500 dark:text-slate-400">
-      Made with ❤️ by <a href="https://www.linkedin.com/in/kallol-chakraborty-9728a699/" class="text-brand-500 hover:underline" target="_blank">Kallol Chakraborty</a>
+      <span class="flex flex-wrap items-center justify-center gap-1">&copy; 2026 <a href="https://www.linkedin.com/in/kallol-chakraborty-9728a699/" class="text-brand-500 hover:underline" target="_blank">Kallol Chakraborty</a> &mdash; All content protected under MIT license. Unauthorized scraping or reproduction is prohibited.</span>
     </div>
   </footer>
 
@@ -145,7 +157,5 @@
     </div>
   </div>
 
-  <!-- Material Symbols -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
 </body>
 </html>
